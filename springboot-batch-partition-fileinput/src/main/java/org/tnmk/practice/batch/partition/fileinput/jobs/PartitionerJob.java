@@ -138,7 +138,7 @@ public class PartitionerJob {
         reader.setResource(new ClassPathResource("/users.csv"));//TODO The resource should be dynamic
         reader.setLineMapper(userLineMapperFactory.constructLineMapper());
         reader.setCurrentItemCount(headerLines + fromRowIndex);
-        reader.setMaxItemCount(toRowIndex - fromRowIndex + 1);
+        reader.setMaxItemCount(headerLines + toRowIndex);
 
         Map<String, Object> parameterValues = new HashMap<>();
         parameterValues.put("fromId", fromId);

@@ -1,9 +1,9 @@
-package com.walking.techie.jobs;
+package org.tnmk.practice.batch.partition.fileinput.jobs;
 
-import com.walking.techie.model.User;
-import com.walking.techie.partition.RangePartitioner;
-import com.walking.techie.processor.UserProcessor;
-import com.walking.techie.tasklet.DummyTasklet;
+import org.tnmk.practice.batch.partition.fileinput.model.User;
+import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
+import org.tnmk.practice.batch.partition.fileinput.processor.UserProcessor;
+import org.tnmk.practice.batch.partition.fileinput.tasklet.DummyTasklet;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;

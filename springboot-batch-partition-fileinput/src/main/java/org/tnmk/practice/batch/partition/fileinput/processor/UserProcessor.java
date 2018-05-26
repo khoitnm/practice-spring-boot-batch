@@ -1,6 +1,6 @@
-package com.walking.techie.processor;
+package org.tnmk.practice.batch.partition.fileinput.processor;
 
-import com.walking.techie.model.User;
+import org.tnmk.practice.batch.partition.fileinput.model.User;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 

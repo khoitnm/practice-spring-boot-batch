@@ -1,4 +1,4 @@
-package com.walking.techie.tasklet;
+package org.tnmk.practice.batch.partition.fileinput.tasklet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.walking.techie;
+package org.tnmk.practice.batch.partition.fileinput;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

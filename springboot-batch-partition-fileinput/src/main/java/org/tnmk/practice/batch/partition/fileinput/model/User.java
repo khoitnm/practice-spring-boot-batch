@@ -1,4 +1,4 @@
-package com.walking.techie.model;
+package org.tnmk.practice.batch.partition.fileinput.model;
 
 import lombok.Data;
 

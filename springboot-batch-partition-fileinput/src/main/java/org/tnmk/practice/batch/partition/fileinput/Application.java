@@ -1,4 +1,4 @@
-package com.walking.techie;
+package org.tnmk.practice.batch.partition.fileinput;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

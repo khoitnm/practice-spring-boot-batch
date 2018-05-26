@@ -1,9 +1,9 @@
-package com.walking.techie.partition;
+package org.tnmk.practice.batch.partition.fileinput.partition;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.walking.techie.tasklet.DummyTasklet;
+import org.tnmk.practice.batch.partition.fileinput.tasklet.DummyTasklet;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

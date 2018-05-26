@@ -14,7 +14,7 @@ public class DummyTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
-        logger.info("Dummy Tasklet called.");
+        logger.info("Dummy Tasklet called. Contribution: "+contribution.toString()+"\t ChunkContext: "+chunkContext.toString()+"\t StepContext: "+chunkContext.getStepContext());
         return RepeatStatus.FINISHED;
     }
 }

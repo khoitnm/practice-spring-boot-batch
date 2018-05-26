@@ -29,9 +29,6 @@ import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
 import org.tnmk.practice.batch.partition.fileinput.processor.UserProcessor;
 import org.tnmk.practice.batch.partition.fileinput.tasklet.DummyTasklet;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Slf4j
 @Configuration
 @EnableBatchProcessing
@@ -46,7 +43,7 @@ public class PartitionerJob {
     @Bean
     public Job PartitionJob() {
         return jobBuilderFactory.get("partitionJob").incrementer(new RunIdIncrementer())
-                .start(masterStep()).next(step2()).build();
+                .start(step1()).next(step2()).build();
     }
 
     @Bean
@@ -60,15 +57,15 @@ public class PartitionerJob {
     }
 
     @Bean
-    public Step masterStep() {
-        return stepBuilderFactory.get("masterStep").partitioner(slave().getName(), rangePartitioner())
+    public Step step1() {
+        return stepBuilderFactory.get("step1").partitioner(slave().getName(), rangePartitioner())
                 .partitionHandler(masterSlaveHandler()).build();
     }
 
     @Bean
     public PartitionHandler masterSlaveHandler() {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
-        handler.setGridSize(10);//original: 10
+        handler.setGridSize(13);//The number of parallelling partitions which will be processed concurrently.
         handler.setTaskExecutor(taskExecutor());
         handler.setStep(slave());
         try {
@@ -83,9 +80,9 @@ public class PartitionerJob {
     public Step slave() {
         log.info("...........called slave .........");
 
-        return stepBuilderFactory.get("slave").<User, User>chunk(100)//original: 100
+        return stepBuilderFactory.get("slave").<User, User>chunk(2)//original: 100 TODO don't understand???
                 .reader(slaveReader(0, 0, null))
-                .processor(slaveProcessor(null)).writer(slaveWriter(null, null)).build();
+                .processor(slaveProcessor(null)).writer(slaveWriter(0, 0)).build();
     }
 
     @Bean
@@ -101,9 +98,9 @@ public class PartitionerJob {
     @Bean
     @StepScope
     public UserProcessor slaveProcessor(@Value("#{stepExecutionContext[name]}") String name) {
-        log.info("********called slave processor **********");
+        log.info("********called slave processor **********: "+name);
         UserProcessor userProcessor = new UserProcessor();
-        userProcessor.setThreadName(name);
+        userProcessor.setProcessorName(name);
         return userProcessor;
     }
 
@@ -139,12 +136,11 @@ public class PartitionerJob {
     @Bean
     @StepScope
     public FlatFileItemWriter<User> slaveWriter(
-            @Value("#{stepExecutionContext[fromId]}") final String fromId,
-            @Value("#{stepExecutionContext[toId]}") final String toId) {
+            @Value("#{stepExecutionContext[fromId]}") final int fromId,
+            @Value("#{stepExecutionContext[toId]}") final int toId) {
         FlatFileItemWriter<User> writer = new FlatFileItemWriter<>();
-        writer.setResource(new FileSystemResource(
-                "csv/outputs/users.processed" + fromId + "-" + toId + ".csv"));
-        //reader.setAppendAllowed(false);
+        writer.setResource(new FileSystemResource("out/csv/users.processed." + fromId + "-" + toId + ".csv"));
+        //writer.setAppendAllowed(false);
         writer.setLineAggregator(new DelimitedLineAggregator<User>() {{
             setDelimiter(",");
             setFieldExtractor(new BeanWrapperFieldExtractor<User>() {{

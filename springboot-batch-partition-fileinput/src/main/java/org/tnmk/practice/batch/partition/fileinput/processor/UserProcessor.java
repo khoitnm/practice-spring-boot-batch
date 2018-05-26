@@ -7,19 +7,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserProcessor implements ItemProcessor<User, User> {
 
-    private String threadName;
+    private String processorName;
 
-    public String getThreadName() {
-        return threadName;
+    public String getProcessorName() {
+        return processorName;
     }
 
-    public void setThreadName(String threadName) {
-        this.threadName = threadName;
+    public void setProcessorName(String processorName) {
+        this.processorName = processorName;
     }
 
     @Override
     public User process(User item) {
-        System.out.println(threadName + " processing : " + item.getId() + " : " + item.getUsername());
+        System.out.println("Thread " + Thread.currentThread().getName() + "\t" + processorName + " processing : " + item.getId() + " : " + item.getUsername());
         return item;
     }
 }

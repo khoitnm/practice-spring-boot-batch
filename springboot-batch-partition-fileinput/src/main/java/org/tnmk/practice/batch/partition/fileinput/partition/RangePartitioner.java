@@ -3,7 +3,7 @@ package org.tnmk.practice.batch.partition.fileinput.partition;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tnmk.practice.batch.partition.fileinput.tasklet.DummyTasklet;
+import org.tnmk.practice.batch.partition.fileinput.tasklet.FanInTasklet;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import org.springframework.batch.item.ExecutionContext;
 
 @Slf4j
 public class RangePartitioner implements Partitioner {
-    public static final Logger log = LoggerFactory.getLogger(DummyTasklet.class);
+    public static final Logger log = LoggerFactory.getLogger(FanInTasklet.class);
 
     /**
      * @param gridSize the number of partition

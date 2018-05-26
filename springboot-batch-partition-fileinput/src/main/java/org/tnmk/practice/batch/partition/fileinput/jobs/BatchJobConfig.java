@@ -27,13 +27,18 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.tnmk.practice.batch.partition.fileinput.model.User;
 import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
 import org.tnmk.practice.batch.partition.fileinput.processor.UserProcessor;
-import org.tnmk.practice.batch.partition.fileinput.tasklet.DummyTasklet;
+import org.tnmk.practice.batch.partition.fileinput.tasklet.FanInTasklet;
 
+/**
+ * Tasklet and Chunk explanation:
+ * http://www.baeldung.com/spring-batch-tasklet-chunk
+ * https://stackoverflow.com/questions/40041334/difference-between-step-tasklet-and-chunk-in-spring-batch
+ */
 @Slf4j
 @Configuration
 @EnableBatchProcessing
-public class PartitionerJob {
-    public static final Logger log = LoggerFactory.getLogger(DummyTasklet.class);
+public class BatchJobConfig {
+    public static final Logger log = LoggerFactory.getLogger(FanInTasklet.class);
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -41,25 +46,26 @@ public class PartitionerJob {
     private StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job PartitionJob() {
-        return jobBuilderFactory.get("partitionJob").incrementer(new RunIdIncrementer())
-                .start(step1()).next(step2()).build();
+    public Job batchJob() {
+        return jobBuilderFactory.get("batchJob")
+                .incrementer(new RunIdIncrementer())
+                .start(fanOutStep())
+                .next(fanInStep())
+                .build();
     }
 
-    @Bean
-    public Step step2() {
-        return stepBuilderFactory.get("step2").tasklet(dummyTask()).build();
-    }
 
+    /**
+     * This is the master step.
+     * View diagram in this site: http://www.baeldung.com/spring-batch-partitioner
+     * @return
+     */
     @Bean
-    public DummyTasklet dummyTask() {
-        return new DummyTasklet();
-    }
-
-    @Bean
-    public Step step1() {
-        return stepBuilderFactory.get("step1").partitioner(slave().getName(), rangePartitioner())
-                .partitionHandler(masterSlaveHandler()).build();
+    public Step fanOutStep() {
+        return stepBuilderFactory.get("fanOutStep")
+                .partitioner(stepSlave().getName(), rangePartitioner())
+                .partitionHandler(masterSlaveHandler())
+                .build();
     }
 
     @Bean
@@ -67,22 +73,19 @@ public class PartitionerJob {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
         handler.setGridSize(13);//The number of parallelling partitions which will be processed concurrently.
         handler.setTaskExecutor(taskExecutor());
-        handler.setStep(slave());
-        try {
-            handler.afterPropertiesSet();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        handler.setStep(stepSlave());
+//      handler.afterPropertiesSet();
         return handler;
     }
 
     @Bean(name = "slave")
-    public Step slave() {
-        log.info("...........called slave .........");
+    public Step stepSlave() {
+        log.info("...........called stepSlave .........");
 
-        return stepBuilderFactory.get("slave").<User, User>chunk(2)//original: 100 TODO don't understand???
+        return stepBuilderFactory.get("stepSlave").<User, User>chunk(3)//Each thread will process 3 items before sleeping so that other threads could be processed.
                 .reader(slaveReader(0, 0, null))
-                .processor(slaveProcessor(null)).writer(slaveWriter(0, 0)).build();
+                .processor(slaveProcessor(null))
+                .writer(slaveWriter(0, 0)).build();
     }
 
     @Bean
@@ -98,7 +101,7 @@ public class PartitionerJob {
     @Bean
     @StepScope
     public UserProcessor slaveProcessor(@Value("#{stepExecutionContext[name]}") String name) {
-        log.info("********called slave processor **********: "+name);
+        log.info("********called stepSlave processor **********: " + name);
         UserProcessor userProcessor = new UserProcessor();
         userProcessor.setProcessorName(name);
         return userProcessor;
@@ -138,6 +141,7 @@ public class PartitionerJob {
     public FlatFileItemWriter<User> slaveWriter(
             @Value("#{stepExecutionContext[fromId]}") final int fromId,
             @Value("#{stepExecutionContext[toId]}") final int toId) {
+
         FlatFileItemWriter<User> writer = new FlatFileItemWriter<>();
         writer.setResource(new FileSystemResource("out/csv/users.processed." + fromId + "-" + toId + ".csv"));
         //writer.setAppendAllowed(false);
@@ -148,5 +152,16 @@ public class PartitionerJob {
             }});
         }});
         return writer;
+    }
+
+
+    @Bean
+    public Step fanInStep() {
+        return stepBuilderFactory.get("fanInStep").tasklet(fanInTask()).build();
+    }
+
+    @Bean
+    public FanInTasklet fanInTask() {
+        return new FanInTasklet();
     }
 }

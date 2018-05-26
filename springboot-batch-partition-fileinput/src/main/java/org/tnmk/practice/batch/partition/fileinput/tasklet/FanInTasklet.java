@@ -9,12 +9,12 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 @Slf4j
-public class DummyTasklet implements Tasklet {
-    public static final Logger logger = LoggerFactory.getLogger(DummyTasklet.class);
+public class FanInTasklet implements Tasklet {
+    public static final Logger logger = LoggerFactory.getLogger(FanInTasklet.class);
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
-        logger.info("Dummy Tasklet called. Contribution: "+contribution.toString()+"\t ChunkContext: "+chunkContext.toString()+"\t StepContext: "+chunkContext.getStepContext());
+        logger.info("FanIn Tasklet called. Contribution: "+contribution.toString()+"\t ChunkContext: "+chunkContext.toString()+"\t StepContext: "+chunkContext.getStepContext());
         return RepeatStatus.FINISHED;
     }
 }

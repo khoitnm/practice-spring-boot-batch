@@ -10,11 +10,11 @@ import org.springframework.batch.repeat.RepeatStatus;
 
 @Slf4j
 public class DummyTasklet implements Tasklet {
-  public static final Logger logger = LoggerFactory.getLogger(DummyTasklet.class);
-  @Override
-  public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext)
-      throws Exception {
-    logger.info("Dummy Tasklet called.");
-    return RepeatStatus.FINISHED;
-  }
+    public static final Logger logger = LoggerFactory.getLogger(DummyTasklet.class);
+
+    @Override
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
+        logger.info("Dummy Tasklet called.");
+        return RepeatStatus.FINISHED;
+    }
 }

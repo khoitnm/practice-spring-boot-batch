@@ -1,16 +1,5 @@
 package org.tnmk.practice.batch.partition.fileinput.jobs;
 
-import org.springframework.batch.item.ItemStreamReader;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.core.io.ClassPathResource;
-import org.tnmk.practice.batch.partition.fileinput.model.User;
-import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
-import org.tnmk.practice.batch.partition.fileinput.processor.UserProcessor;
-import org.tnmk.practice.batch.partition.fileinput.tasklet.DummyTasklet;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +12,8 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.item.ItemStreamReader;
+import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
@@ -30,9 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.tnmk.practice.batch.partition.fileinput.model.User;
+import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
+import org.tnmk.practice.batch.partition.fileinput.processor.UserProcessor;
+import org.tnmk.practice.batch.partition.fileinput.tasklet.DummyTasklet;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Configuration
@@ -86,7 +84,7 @@ public class PartitionerJob {
         log.info("...........called slave .........");
 
         return stepBuilderFactory.get("slave").<User, User>chunk(100)//original: 100
-                .reader(slaveReader(null, null, null))
+                .reader(slaveReader(0, 0, null))
                 .processor(slaveProcessor(null)).writer(slaveWriter(null, null)).build();
     }
 
@@ -116,35 +114,25 @@ public class PartitionerJob {
     /**
      * Read more at this https://www.petrikainulainen.net/programming/spring-framework/spring-batch-tutorial-reading-information-from-a-file/
      *
-     * @param fromId
-     * @param toId
+     * @param fromRowIndex
+     * @param toRowIndex
      * @param name
      * @return
      */
     @Bean
     @StepScope
     public ItemStreamReader<User> slaveReader(
-            @Value("#{stepExecutionContext[fromId]}") final String fromId,
-            @Value("#{stepExecutionContext[toId]}") final String toId,
+            @Value("#{stepExecutionContext[fromId]}") final int fromRowIndex,
+            @Value("#{stepExecutionContext[toId]}") final int toRowIndex,
             @Value("#{stepExecutionContext[name]}") final String name) {
-
-        log.info("slaveReader start " + fromId + " " + toId);
-
-        int fromRowIndex = Integer.valueOf(fromId) - 1;
-        int toRowIndex = Integer.valueOf(toId) - 1;
         int headerLines = 1;
 
         FlatFileItemReader<User> reader = new FlatFileItemReader<>();
         reader.setResource(new ClassPathResource("/users.csv"));//TODO The resource should be dynamic
         reader.setLineMapper(userLineMapperFactory.constructLineMapper());
         reader.setCurrentItemCount(headerLines + fromRowIndex);
-        reader.setMaxItemCount(headerLines + toRowIndex);
+        reader.setMaxItemCount(headerLines + toRowIndex + 1);//Doesn't include the last item
 
-        Map<String, Object> parameterValues = new HashMap<>();
-        parameterValues.put("fromId", fromId);
-        parameterValues.put("toId", toId);
-        log.info("Parameter Value " + name + " " + parameterValues);
-        log.info("slaveReader end " + fromId + " " + toId);
         return reader;
     }
 

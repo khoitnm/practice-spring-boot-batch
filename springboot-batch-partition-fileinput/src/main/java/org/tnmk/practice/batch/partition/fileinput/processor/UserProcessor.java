@@ -18,7 +18,7 @@ public class UserProcessor implements ItemProcessor<User, User> {
     }
 
     @Override
-    public User process(User item) throws Exception {
+    public User process(User item) {
         System.out.println(threadName + " processing : " + item.getId() + " : " + item.getUsername());
         return item;
     }

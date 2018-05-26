@@ -1,5 +1,7 @@
 .gradle
-/build/
+*/build/
+*/out/
+**/outputs/
 !gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###
@@ -23,4 +25,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-springboot-batch-partition-fileinput/csv/outputs/
+
+

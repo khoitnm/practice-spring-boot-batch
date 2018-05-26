@@ -14,34 +14,30 @@ import org.springframework.batch.item.ExecutionContext;
 public class RangePartitioner implements Partitioner {
     public static final Logger log = LoggerFactory.getLogger(DummyTasklet.class);
 
+    /**
+     * @param gridSize the number of partition
+     * @return
+     */
     @Override
     public Map<String, ExecutionContext> partition(int gridSize) {
         log.info("partition called gridsize= " + gridSize);
 
         Map<String, ExecutionContext> result = new HashMap<String, ExecutionContext>();
 
-        int range = 10;
-        int fromId = 1;
-        int toId = range;
+        int pageSize = 10;
+        int iFromId = 0;
+        int iToId = iFromId + pageSize - 1;
 
-        for (int i = 1; i <= gridSize; i++) {
-            ExecutionContext value = new ExecutionContext();
+        for (int i = 0; i <= gridSize; i++) {
+            ExecutionContext iPartitionContext = new ExecutionContext();
+            iPartitionContext.putString("name", "Partition " + i);
+            iPartitionContext.putInt("fromId", iFromId);
+            iPartitionContext.putInt("toId", iToId);
 
-            System.out.println("\nStarting : Thread" + i);
-            System.out.println("fromId : " + fromId);
-            System.out.println("toId : " + toId);
+            result.put("partition" + i, iPartitionContext);
 
-            value.putInt("fromId", fromId);
-            value.putInt("toId", toId);
-
-            // give each thread a name, thread 1,2,3
-            value.putString("name", "Thread" + i);
-
-            result.put("partition" + i, value);
-
-            fromId = toId + 1;
-            toId += range;
-
+            iFromId = iToId + 1;
+            iToId += pageSize;
         }
         return result;
     }

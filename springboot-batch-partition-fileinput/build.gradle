@@ -18,7 +18,9 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.2.RELEASE'
     compile 'org.springframework:spring-oxm:4.3.7.RELEASE'
     compileOnly('org.projectlombok:lombok:1.16.12')
-    runtime('mysql:mysql-connector-java')
+    runtime('org.hsqldb:hsqldb')
+
+//    runtime('mysql:mysql-connector-java')
     compile('org.springframework.boot:spring-boot-starter-batch:1.5.2.RELEASE')
     testCompile('org.springframework.boot:spring-boot-starter-test:1.5.2.RELEASE')
 }

@@ -1,4 +1,4 @@
-package org.tnmk.practice.batch.partition.fileinput.jobs;
+package org.tnmk.practice.batch.partition.fileinput.fileprocessor;
 
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;

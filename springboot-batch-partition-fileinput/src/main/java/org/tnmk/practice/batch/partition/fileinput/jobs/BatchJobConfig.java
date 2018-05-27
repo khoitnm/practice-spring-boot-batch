@@ -24,9 +24,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.tnmk.practice.batch.partition.fileinput.model.User;
 import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
-import org.tnmk.practice.batch.partition.fileinput.processor.UserProcessor;
+import org.tnmk.practice.batch.partition.fileinput.fileprocessor.UserLineMapperFactory;
+import org.tnmk.practice.batch.partition.fileinput.fileprocessor.UserProcessor;
 import org.tnmk.practice.batch.partition.fileinput.tasklet.FanInTasklet;
 
 /**
@@ -54,10 +56,10 @@ public class BatchJobConfig {
                 .build();
     }
 
-
     /**
      * This is the master step.
      * View diagram in this site: http://www.baeldung.com/spring-batch-partitioner
+     *
      * @return
      */
     @Bean
@@ -82,7 +84,9 @@ public class BatchJobConfig {
     public Step stepSlave() {
         log.info("...........called stepSlave .........");
 
-        return stepBuilderFactory.get("stepSlave").<User, User>chunk(3)//Each thread will process 3 items before sleeping so that other threads could be processed.
+        return stepBuilderFactory.get("stepSlave")
+                //Enable chunk model, it means each step will include a Reader, Processor and Writer processes.
+                .<User, User>chunk(4)//Each thread will process 4 items before sleeping so that other threads could be processed.
                 .reader(slaveReader(0, 0, null))
                 .processor(slaveProcessor(null))
                 .writer(slaveWriter(0, 0)).build();
@@ -94,7 +98,14 @@ public class BatchJobConfig {
     }
 
     @Bean
-    public SimpleAsyncTaskExecutor taskExecutor() {
+    public TaskExecutor taskExecutor() {
+        // each time the slave step is repeated, that step will be executed in a different thread.
+        // Without this task, the partitions will be run on the main thread.
+        // It means that there's no concurrency processes.
+        //
+        // If you use ConcurrentTaskExecutor, each time the slave step is repeated, that step will not be run on the main thread.
+        // But all repeated execution are all run on the same thread??? Maybe I still don't understand it yet?!
+        // It means that there's no concurrency processes either.
         return new SimpleAsyncTaskExecutor();
     }
 

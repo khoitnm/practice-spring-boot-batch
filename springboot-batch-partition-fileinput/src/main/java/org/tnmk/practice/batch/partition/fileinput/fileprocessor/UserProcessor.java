@@ -1,4 +1,4 @@
-package org.tnmk.practice.batch.partition.fileinput.processor;
+package org.tnmk.practice.batch.partition.fileinput.fileprocessor;
 
 import org.tnmk.practice.batch.partition.fileinput.model.User;
 import org.springframework.batch.item.ItemProcessor;

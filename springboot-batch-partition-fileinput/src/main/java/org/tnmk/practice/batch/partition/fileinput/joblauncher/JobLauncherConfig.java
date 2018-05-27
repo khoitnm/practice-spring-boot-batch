@@ -29,7 +29,7 @@ public class JobLauncherConfig {
      * @return
      */
     @Bean
-    public JobLauncher jobLauncher() {
+    public JobLauncher simpleJobLauncher() {
         SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
         jobLauncher.setJobRepository(jobRepository);
         jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());

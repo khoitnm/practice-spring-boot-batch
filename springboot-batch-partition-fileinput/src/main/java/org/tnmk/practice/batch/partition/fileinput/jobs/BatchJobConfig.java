@@ -26,10 +26,11 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.tnmk.practice.batch.partition.fileinput.consts.JobParams;
-import org.tnmk.practice.batch.partition.fileinput.model.User;
-import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
+import org.tnmk.practice.batch.partition.fileinput.consts.PartitionContextParams;
 import org.tnmk.practice.batch.partition.fileinput.fileprocessor.UserLineMapperFactory;
 import org.tnmk.practice.batch.partition.fileinput.fileprocessor.UserProcessor;
+import org.tnmk.practice.batch.partition.fileinput.model.User;
+import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
 import org.tnmk.practice.batch.partition.fileinput.tasklet.FanInTasklet;
 
 /**
@@ -88,7 +89,7 @@ public class BatchJobConfig {
         return stepBuilderFactory.get("stepSlave")
                 //Enable chunk model, it means each step will include a Reader, Processor and Writer processes.
                 .<User, User>chunk(4)//Each thread will process 4 items before sleeping so that other threads could be processed.
-                .reader(slaveReader(null, 0, 0, null))
+                .reader(slaveReader(null, 0, 0))
                 .processor(slaveProcessor(null))
                 .writer(slaveWriter(null, 0, 0)).build();
     }
@@ -112,7 +113,7 @@ public class BatchJobConfig {
 
     @Bean
     @StepScope
-    public UserProcessor slaveProcessor(@Value("#{stepExecutionContext[name]}") String name) {
+    public UserProcessor slaveProcessor(@Value("#{stepExecutionContext[" + PartitionContextParams.PARTITION_NAME + "]}") String name) {
         log.info("********called stepSlave processor **********: " + name);
         UserProcessor userProcessor = new UserProcessor();
         userProcessor.setProcessorName(name);
@@ -128,16 +129,14 @@ public class BatchJobConfig {
      *
      * @param fromRowIndex
      * @param toRowIndex
-     * @param name
      * @return
      */
     @Bean
     @StepScope
     public ItemStreamReader<User> slaveReader(
             @Value("#{jobParameters[" + JobParams.PARAM_INPUT_FILE_PATH + "]}") final String inputFilePath,
-            @Value("#{stepExecutionContext[fromId]}") final int fromRowIndex,
-            @Value("#{stepExecutionContext[toId]}") final int toRowIndex,
-            @Value("#{stepExecutionContext[name]}") final String name) {
+            @Value("#{stepExecutionContext[" + PartitionContextParams.FROM_INDEX + "]}") final int fromRowIndex,
+            @Value("#{stepExecutionContext[" + PartitionContextParams.TO_INDEX + "]}") final int toRowIndex) {
         int headerLines = 1;
 
         FlatFileItemReader<User> reader = new FlatFileItemReader<>();
@@ -153,8 +152,8 @@ public class BatchJobConfig {
     @StepScope
     public FlatFileItemWriter<User> slaveWriter(
             @Value("#{jobParameters[" + JobParams.PARAM_OUTPUT_FILE_PATH + "]}") final String outputFilePath,
-            @Value("#{stepExecutionContext[fromId]}") final int fromId,
-            @Value("#{stepExecutionContext[toId]}") final int toId) {
+            @Value("#{stepExecutionContext[" + PartitionContextParams.FROM_INDEX + "]}") final int fromId,
+            @Value("#{stepExecutionContext[" + PartitionContextParams.TO_INDEX + "]}") final int toId) {
 
         FlatFileItemWriter<User> writer = new FlatFileItemWriter<>();
         writer.setResource(new FileSystemResource(outputFilePath + fromId + "-" + toId + ".csv"));

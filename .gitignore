@@ -1,6 +1,6 @@
 .gradle
-*/build/
-*/out/
+**/build/
+**/out/
 **/outputs/
 !gradle/wrapper/gradle-wrapper.jar
 
@@ -25,5 +25,4 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-
 

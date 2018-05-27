@@ -12,6 +12,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
@@ -48,8 +49,8 @@ public class BatchJobConfig {
     private StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job batchJob() {
-        return jobBuilderFactory.get("batchJob")
+    public Job fileProcessingBatchJob() {
+        return jobBuilderFactory.get("fileProcessingBatchJob")
                 .incrementer(new RunIdIncrementer())
                 .start(fanOutStep())
                 .next(fanInStep())
@@ -87,7 +88,7 @@ public class BatchJobConfig {
         return stepBuilderFactory.get("stepSlave")
                 //Enable chunk model, it means each step will include a Reader, Processor and Writer processes.
                 .<User, User>chunk(4)//Each thread will process 4 items before sleeping so that other threads could be processed.
-                .reader(slaveReader(0, 0, null))
+                .reader(slaveReader(null, 0, 0, null))
                 .processor(slaveProcessor(null))
                 .writer(slaveWriter(0, 0)).build();
     }
@@ -133,13 +134,14 @@ public class BatchJobConfig {
     @Bean
     @StepScope
     public ItemStreamReader<User> slaveReader(
+            @Value("#{jobParameters[filePath]}") final String inputFilePath,
             @Value("#{stepExecutionContext[fromId]}") final int fromRowIndex,
             @Value("#{stepExecutionContext[toId]}") final int toRowIndex,
             @Value("#{stepExecutionContext[name]}") final String name) {
         int headerLines = 1;
 
         FlatFileItemReader<User> reader = new FlatFileItemReader<>();
-        reader.setResource(new ClassPathResource("/users.csv"));//TODO The resource should be dynamic
+        reader.setResource(new ClassPathResource(inputFilePath));
         reader.setLineMapper(userLineMapperFactory.constructLineMapper());
         reader.setCurrentItemCount(headerLines + fromRowIndex);
         reader.setMaxItemCount(headerLines + toRowIndex + 1);//Doesn't include the last item

@@ -1,3 +1,8 @@
+#Prevent batch jobs from starting automatically
+spring:
+  batch:
+    job:
+      enabled: false
 #spring.datasource.url=jdbc:mysql://localhost:3306/spring_batch
 #spring.datasource.username=root
 #spring.datasource.password=santosh

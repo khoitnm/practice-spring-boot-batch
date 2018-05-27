@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.tnmk.practice.batch.partition.fileinput.exception.BatchJobException;
 
+/**
+ * We already stopped batch jobs from from starting automatically by default.
+ * So this configuration will help us to start the job when we want.
+ */
 @Configuration
 public class JobLauncherConfig {
 

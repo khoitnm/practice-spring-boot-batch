@@ -13,16 +13,25 @@ import org.springframework.stereotype.Service;
 import org.tnmk.practice.batch.partition.fileinput.exception.BatchJobException;
 
 /**
- * This is just a wrapper class to start a job more easier.
+ * This is just a helper class to start a job more easier.
  */
 @Service
-public class JobLauncherWrapper {
+public class FileProcessingJobLauncherHelper {
 
     @Autowired
     private JobLauncher jobLauncher;
 
-    public void startJob(Job job) {
-        JobParameters jobParameters = new JobParametersBuilder().toJobParameters();
+    @Autowired
+    private Job fileProcessingJob;
+
+    public void startFileProcessJob(String filePath) {
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("filePath", filePath)
+                .toJobParameters();
+        startJob(fileProcessingJob, jobParameters);
+    }
+
+    private void startJob(Job job, JobParameters jobParameters) {
         try {
             jobLauncher.run(job, jobParameters);
         } catch (JobRestartException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobParametersInvalidException e) {

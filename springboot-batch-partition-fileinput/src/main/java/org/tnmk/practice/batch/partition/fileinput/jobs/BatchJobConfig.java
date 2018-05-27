@@ -12,7 +12,6 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
@@ -26,6 +25,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
+import org.tnmk.practice.batch.partition.fileinput.consts.JobParams;
 import org.tnmk.practice.batch.partition.fileinput.model.User;
 import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
 import org.tnmk.practice.batch.partition.fileinput.fileprocessor.UserLineMapperFactory;
@@ -90,7 +90,7 @@ public class BatchJobConfig {
                 .<User, User>chunk(4)//Each thread will process 4 items before sleeping so that other threads could be processed.
                 .reader(slaveReader(null, 0, 0, null))
                 .processor(slaveProcessor(null))
-                .writer(slaveWriter(0, 0)).build();
+                .writer(slaveWriter(null, 0, 0)).build();
     }
 
     @Bean
@@ -134,7 +134,7 @@ public class BatchJobConfig {
     @Bean
     @StepScope
     public ItemStreamReader<User> slaveReader(
-            @Value("#{jobParameters[filePath]}") final String inputFilePath,
+            @Value("#{jobParameters[" + JobParams.PARAM_INPUT_FILE_PATH + "]}") final String inputFilePath,
             @Value("#{stepExecutionContext[fromId]}") final int fromRowIndex,
             @Value("#{stepExecutionContext[toId]}") final int toRowIndex,
             @Value("#{stepExecutionContext[name]}") final String name) {
@@ -152,11 +152,12 @@ public class BatchJobConfig {
     @Bean
     @StepScope
     public FlatFileItemWriter<User> slaveWriter(
+            @Value("#{jobParameters[" + JobParams.PARAM_OUTPUT_FILE_PATH + "]}") final String outputFilePath,
             @Value("#{stepExecutionContext[fromId]}") final int fromId,
             @Value("#{stepExecutionContext[toId]}") final int toId) {
 
         FlatFileItemWriter<User> writer = new FlatFileItemWriter<>();
-        writer.setResource(new FileSystemResource("out/csv/users.processed." + fromId + "-" + toId + ".csv"));
+        writer.setResource(new FileSystemResource(outputFilePath + fromId + "-" + toId + ".csv"));
         //writer.setAppendAllowed(false);
         writer.setLineAggregator(new DelimitedLineAggregator<User>() {{
             setDelimiter(",");

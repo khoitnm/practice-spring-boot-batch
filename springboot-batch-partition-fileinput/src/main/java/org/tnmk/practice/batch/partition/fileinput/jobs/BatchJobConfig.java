@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.configuration.annotation.*;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
@@ -73,10 +70,11 @@ public class BatchJobConfig {
     }
 
     @Bean
+    @JobScope
     public PartitionHandler masterSlaveHandler() {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
         handler.setGridSize(13);//The number of parallelling partitions which will be processed concurrently.
-        handler.setTaskExecutor(taskExecutor());
+        handler.setTaskExecutor(partitionHandlerTaskExecutor());
         handler.setStep(stepSlave());
 //      handler.afterPropertiesSet();
         return handler;
@@ -90,17 +88,19 @@ public class BatchJobConfig {
                 //Enable chunk model, it means each step will include a Reader, Processor and Writer processes.
                 .<User, User>chunk(4)//Each thread will process 4 items before sleeping so that other threads could be processed.
                 .reader(slaveReader(null, 0, 0))
-                .processor(slaveProcessor(null))
+                .processor(slaveProcessor())
                 .writer(slaveWriter(null, 0, 0)).build();
     }
 
     @Bean
+    @JobScope
     public RangePartitioner rangePartitioner() {
         return new RangePartitioner();
     }
 
     @Bean
-    public TaskExecutor taskExecutor() {
+    @JobScope
+    public TaskExecutor partitionHandlerTaskExecutor() {
         // each time the slave step is repeated, that step will be executed in a different thread.
         // Without this task, the partitions will be run on the main thread.
         // It means that there's no concurrency processes.
@@ -113,11 +113,8 @@ public class BatchJobConfig {
 
     @Bean
     @StepScope
-    public UserProcessor slaveProcessor(@Value("#{stepExecutionContext[" + PartitionContextParams.PARTITION_NAME + "]}") String name) {
-        log.info("********called stepSlave processor **********: " + name);
-        UserProcessor userProcessor = new UserProcessor();
-        userProcessor.setProcessorName(name);
-        return userProcessor;
+    public UserProcessor slaveProcessor() {
+        return new UserProcessor();
     }
 
 

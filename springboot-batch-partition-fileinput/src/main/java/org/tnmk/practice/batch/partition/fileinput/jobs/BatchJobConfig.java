@@ -76,7 +76,11 @@ public class BatchJobConfig {
         handler.setGridSize(13);//The number of parallelling partitions which will be processed concurrently.
         handler.setTaskExecutor(partitionHandlerTaskExecutor());
         handler.setStep(stepSlave());
-//      handler.afterPropertiesSet();
+        try {
+            handler.afterPropertiesSet();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return handler;
     }
 
@@ -99,7 +103,6 @@ public class BatchJobConfig {
     }
 
     @Bean
-    @JobScope
     public TaskExecutor partitionHandlerTaskExecutor() {
         // each time the slave step is repeated, that step will be executed in a different thread.
         // Without this task, the partitions will be run on the main thread.

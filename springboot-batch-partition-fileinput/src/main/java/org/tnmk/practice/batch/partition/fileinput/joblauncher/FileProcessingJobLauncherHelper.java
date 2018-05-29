@@ -9,8 +9,12 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.tnmk.practice.batch.partition.fileinput.consts.JobParams;
 import org.tnmk.practice.batch.partition.fileinput.exception.BatchJobException;
+
+import java.util.UUID;
 
 /**
  * This is just a helper class to start a job more easier.
@@ -24,9 +28,13 @@ public class FileProcessingJobLauncherHelper {
     @Autowired
     private Job fileProcessingJob;
 
-    public void startFileProcessJob(String filePath) {
+    public void startFileProcessJob(String inputFilePath, String outputFilePath) {
         JobParameters jobParameters = new JobParametersBuilder()
-                .addString("filePath", filePath)
+                // The job instance is determine by Job & JobParameters.
+                // This param ensure that each jobInstance will have a different Id.
+                .addString(JobParams.PARAM_JOB_INSTANCE_ID, UUID.randomUUID().toString(), true)
+                .addString(JobParams.PARAM_INPUT_FILE_PATH, inputFilePath)
+                .addString(JobParams.PARAM_OUTPUT_FILE_PATH, outputFilePath)
                 .toJobParameters();
         startJob(fileProcessingJob, jobParameters);
     }

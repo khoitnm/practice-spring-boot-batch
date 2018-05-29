@@ -5,14 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.configuration.annotation.*;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
@@ -26,10 +22,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
-import org.tnmk.practice.batch.partition.fileinput.model.User;
-import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
+import org.tnmk.practice.batch.partition.fileinput.consts.JobParams;
+import org.tnmk.practice.batch.partition.fileinput.consts.PartitionContextParams;
 import org.tnmk.practice.batch.partition.fileinput.fileprocessor.UserLineMapperFactory;
 import org.tnmk.practice.batch.partition.fileinput.fileprocessor.UserProcessor;
+import org.tnmk.practice.batch.partition.fileinput.model.User;
+import org.tnmk.practice.batch.partition.fileinput.partition.RangePartitioner;
 import org.tnmk.practice.batch.partition.fileinput.tasklet.FanInTasklet;
 
 /**
@@ -72,12 +70,17 @@ public class BatchJobConfig {
     }
 
     @Bean
+    @JobScope
     public PartitionHandler masterSlaveHandler() {
         TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
         handler.setGridSize(13);//The number of parallelling partitions which will be processed concurrently.
-        handler.setTaskExecutor(taskExecutor());
+        handler.setTaskExecutor(partitionHandlerTaskExecutor());
         handler.setStep(stepSlave());
-//      handler.afterPropertiesSet();
+        try {
+            handler.afterPropertiesSet();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return handler;
     }
 
@@ -88,18 +91,19 @@ public class BatchJobConfig {
         return stepBuilderFactory.get("stepSlave")
                 //Enable chunk model, it means each step will include a Reader, Processor and Writer processes.
                 .<User, User>chunk(4)//Each thread will process 4 items before sleeping so that other threads could be processed.
-                .reader(slaveReader(null, 0, 0, null))
-                .processor(slaveProcessor(null))
-                .writer(slaveWriter(0, 0)).build();
+                .reader(slaveReader(null, 0, 0))
+                .processor(slaveProcessor())
+                .writer(slaveWriter(null, 0, 0)).build();
     }
 
     @Bean
+    @JobScope
     public RangePartitioner rangePartitioner() {
         return new RangePartitioner();
     }
 
     @Bean
-    public TaskExecutor taskExecutor() {
+    public TaskExecutor partitionHandlerTaskExecutor() {
         // each time the slave step is repeated, that step will be executed in a different thread.
         // Without this task, the partitions will be run on the main thread.
         // It means that there's no concurrency processes.
@@ -112,11 +116,8 @@ public class BatchJobConfig {
 
     @Bean
     @StepScope
-    public UserProcessor slaveProcessor(@Value("#{stepExecutionContext[name]}") String name) {
-        log.info("********called stepSlave processor **********: " + name);
-        UserProcessor userProcessor = new UserProcessor();
-        userProcessor.setProcessorName(name);
-        return userProcessor;
+    public UserProcessor slaveProcessor() {
+        return new UserProcessor();
     }
 
 
@@ -128,16 +129,14 @@ public class BatchJobConfig {
      *
      * @param fromRowIndex
      * @param toRowIndex
-     * @param name
      * @return
      */
     @Bean
     @StepScope
     public ItemStreamReader<User> slaveReader(
-            @Value("#{jobParameters[filePath]}") final String inputFilePath,
-            @Value("#{stepExecutionContext[fromId]}") final int fromRowIndex,
-            @Value("#{stepExecutionContext[toId]}") final int toRowIndex,
-            @Value("#{stepExecutionContext[name]}") final String name) {
+            @Value("#{jobParameters[" + JobParams.PARAM_INPUT_FILE_PATH + "]}") final String inputFilePath,
+            @Value("#{stepExecutionContext[" + PartitionContextParams.FROM_INDEX + "]}") final int fromRowIndex,
+            @Value("#{stepExecutionContext[" + PartitionContextParams.TO_INDEX + "]}") final int toRowIndex) {
         int headerLines = 1;
 
         FlatFileItemReader<User> reader = new FlatFileItemReader<>();
@@ -152,11 +151,12 @@ public class BatchJobConfig {
     @Bean
     @StepScope
     public FlatFileItemWriter<User> slaveWriter(
-            @Value("#{stepExecutionContext[fromId]}") final int fromId,
-            @Value("#{stepExecutionContext[toId]}") final int toId) {
+            @Value("#{jobParameters[" + JobParams.PARAM_OUTPUT_FILE_PATH + "]}") final String outputFilePath,
+            @Value("#{stepExecutionContext[" + PartitionContextParams.FROM_INDEX + "]}") final int fromId,
+            @Value("#{stepExecutionContext[" + PartitionContextParams.TO_INDEX + "]}") final int toId) {
 
         FlatFileItemWriter<User> writer = new FlatFileItemWriter<>();
-        writer.setResource(new FileSystemResource("out/csv/users.processed." + fromId + "-" + toId + ".csv"));
+        writer.setResource(new FileSystemResource(outputFilePath + fromId + "-" + toId + ".csv"));
         //writer.setAppendAllowed(false);
         writer.setLineAggregator(new DelimitedLineAggregator<User>() {{
             setDelimiter(",");

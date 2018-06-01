@@ -1,0 +1,4 @@
+rootProject.name = "practice-spring-boot-batch"
+
+include 'springboot-batch-partition-dbinput'
+include 'springboot-batch-partition-fileinput'

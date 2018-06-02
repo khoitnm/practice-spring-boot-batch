@@ -14,7 +14,7 @@ public class SimpleTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String jobInstance = (String) chunkContext.getStepContext().getJobParameters().get(JobParams.PARAM_JOB_INSTANCE_ID);
-        log.info("Executing SimpleTasklet: JobInstance: {}, Step contribution: {}, chunkContext: {}", jobInstance, contribution, chunkContext);
+        log.info("Thread[{}]: Executing SimpleTasklet: JobInstance: {}, Step contribution: {}, chunkContext: {}", Thread.currentThread().getId(), jobInstance, contribution, chunkContext);
         Thread.sleep(1000);
         return RepeatStatus.FINISHED;
     }

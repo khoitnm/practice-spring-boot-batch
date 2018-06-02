@@ -12,12 +12,10 @@ import java.util.concurrent.Future;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class RunJobsConcurrencyApplicationTests {
-
     @Autowired
     AsyncBatchJobLauncher asyncBatchJobLauncher;
 
-    //TODO At this moment, somehow running 2 job instances concurrency get stuck!!!
-//    @Test
+    @Test
     public void startFileProcessingBatchJob() throws InterruptedException, ExecutionException {
         Future<String> future = asyncBatchJobLauncher.run("/users.csv", "out/csv/users.processed.");
         Future<String> future2 = asyncBatchJobLauncher.run("/users_7K.csv", "out/csv_7K/users.processed.");

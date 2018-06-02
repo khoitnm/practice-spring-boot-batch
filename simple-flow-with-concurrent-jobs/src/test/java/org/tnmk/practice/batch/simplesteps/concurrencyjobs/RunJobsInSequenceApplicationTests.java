@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.tnmk.practice.batch.partition.fileinput.joblauncher.FileProcessingJobLauncherHelper;
+import org.tnmk.practice.batch.simplesteps.concurrencyjobs.joblauncher.FileProcessingJobLauncherHelper;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

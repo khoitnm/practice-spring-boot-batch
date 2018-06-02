@@ -19,9 +19,11 @@ public class RunJobsConcurrencyApplicationTests {
     public void startFileProcessingBatchJob() throws InterruptedException, ExecutionException {
         Future<String> future = asyncBatchJobLauncher.run("/heroes.csv", "out/csv/heroes.processed.");
         Future<String> future2 = asyncBatchJobLauncher.run("/users_7K.csv", "out/csv_7K/users.processed.");
+        Future<String> future3 = asyncBatchJobLauncher.run("/heroes.csv", "out/csv/heroes_2.processed.");
+
 
         while (true) {
-            if (future.isDone() && future2.isDone()) {
+            if (future.isDone() && future2.isDone() && future3.isDone()) {
                 System.out.println("Result from asynchronous process - " + future.get() + "& " + future2.get());
                 break;
             }

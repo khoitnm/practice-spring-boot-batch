@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.consts.JobParams;
 import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job.step.FileItemReaderFactory;
 import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job.step.FileItemWriterFactory;
@@ -55,6 +56,12 @@ public class BatchJobConfig {
                 .reader(fileReader(null))
                 .processor(itemProcessor())
                 .writer(fileWriter(null))
+
+                //Each chunk will run on a separated thread
+                //There's only maximum 10 concurrent chunks are handled at the same time.
+                .taskExecutor(new SimpleAsyncTaskExecutor())
+                .throttleLimit(10)
+
                 .build();
     }
 
@@ -70,7 +77,7 @@ public class BatchJobConfig {
                 inputFilePath,
                 Arrays.asList("id", "username", "password", "age"),
                 User.class,
-                1, -1);
+                0, -1);
     }
 
     @Bean
@@ -86,6 +93,6 @@ public class BatchJobConfig {
         return FileItemWriterFactory.constructFileItemWriter(
                 outputFilePath,
                 Arrays.asList("id", "username", "password", "age"),
-                1, -1);
+                0, -1);
     }
 }

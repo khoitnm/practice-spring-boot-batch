@@ -1,5 +1,7 @@
 package org.tnmk.practice.batch.simplesteps.concurrencyjobs.joblauncher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -21,7 +23,7 @@ import java.util.UUID;
  */
 @Service
 public class FileProcessingJobLauncherHelper {
-
+    public static final Logger logger = LoggerFactory.getLogger(FileProcessingJobLauncherHelper.class);
     @Autowired
     private JobLauncher jobLauncher;
 
@@ -41,7 +43,9 @@ public class FileProcessingJobLauncherHelper {
 
     private void startJob(Job job, JobParameters jobParameters) {
         try {
+            logger.info("Starting job {} /////////////////////////////////////////////////", jobParameters);
             jobLauncher.run(job, jobParameters);
+            logger.info("Finish starting job {} -----------------------------------------", jobParameters);
         } catch (JobRestartException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobParametersInvalidException e) {
             throw new BatchJobException(e);
         }

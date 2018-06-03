@@ -43,9 +43,9 @@ public class FileProcessingJobLauncherHelper {
 
     private void startJob(Job job, JobParameters jobParameters) {
         try {
-            logger.info("Starting job {} /////////////////////////////////////////////////", jobParameters);
+            logger.info("Thread[{}]: Starting job {} /////////////////////////////////////////////////", Thread.currentThread().getId(), jobParameters);
             jobLauncher.run(job, jobParameters);
-            logger.info("Finish starting job {} -----------------------------------------", jobParameters);
+            logger.info("Thread[{}]: Finish starting job {} -----------------------------------------", Thread.currentThread().getId(), jobParameters);
         } catch (JobRestartException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobParametersInvalidException e) {
             throw new BatchJobException(e);
         }

@@ -21,6 +21,10 @@ Each job will have a processing step which runs with multi threads.
 
 Build project with Gradlew:
 ```
+sh gradlew clean build
+```
+or if you want to skip tests, run:
+```
 sh gradlew clean build -x test
 ```
 

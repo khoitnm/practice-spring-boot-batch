@@ -1,0 +1,5 @@
+//ORG.TNMK
+ext.commonBatchVersion = '0.0.1-SNAPSHOT'
+
+//Spring
+ext.springBootVersion = '2.0.2.RELEASE'

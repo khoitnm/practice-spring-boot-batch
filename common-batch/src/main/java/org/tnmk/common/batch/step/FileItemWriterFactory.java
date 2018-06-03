@@ -4,7 +4,6 @@ import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.core.io.FileSystemResource;
-import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.model.User;
 
 import java.util.List;
 

@@ -1,17 +1,15 @@
 package org.tnmk.practice.batch.partition.fileinput.partition;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.tnmk.practice.batch.partition.fileinput.consts.PartitionContextParams;
-import org.tnmk.practice.batch.partition.fileinput.tasklet.FanInTasklet;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
+import org.tnmk.practice.batch.partition.fileinput.consts.PartitionContextParams;
+import org.tnmk.practice.batch.partition.fileinput.tasklet.FanInTasklet;
 
-@Slf4j
+import java.util.HashMap;
+import java.util.Map;
+
 public class RangePartitioner implements Partitioner {
     public static final Logger log = LoggerFactory.getLogger(FanInTasklet.class);
 

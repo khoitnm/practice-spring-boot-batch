@@ -1,7 +1,6 @@
 task wrapper(type: Wrapper) {
     gradleVersion = '3.2.1'
 }
-
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
@@ -15,15 +14,17 @@ repositories {
 
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.2.RELEASE'
-    compile 'org.springframework:spring-oxm:4.3.7.RELEASE'
-    compileOnly('org.projectlombok:lombok:1.16.12')
+    compile project(':common-batch')
+//    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.2.RELEASE'
+//    compile 'org.springframework:spring-oxm:4.3.7.RELEASE'
 
     runtime('org.hsqldb:hsqldb')
-    compile('org.springframework.boot:spring-boot-starter-batch:1.5.2.RELEASE')
+//    compile('org.springframework.boot:spring-boot-starter-batch:1.5.2.RELEASE')
     testCompile('org.springframework.boot:spring-boot-starter-test:1.5.2.RELEASE')
 }
 buildscript {
+    apply from: "version.gradle"
+
     repositories {
         mavenLocal()
         jcenter()

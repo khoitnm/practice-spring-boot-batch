@@ -1,6 +1,5 @@
 package org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.*;
@@ -13,9 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.consts.JobParams;
 import org.tnmk.common.batch.step.FileItemReaderFactory;
 import org.tnmk.common.batch.step.FileItemWriterFactory;
+import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.consts.JobParams;
 import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job.step.UserProcessor;
 import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.model.User;
 
@@ -27,7 +26,6 @@ import java.util.Arrays;
  * http://www.baeldung.com/spring-batch-tasklet-chunk
  * https://stackoverflow.com/questions/40041334/difference-between-step-tasklet-and-chunk-in-spring-batch
  */
-@Slf4j
 @Configuration
 @EnableBatchProcessing
 public class BatchJobConfig {

@@ -1,16 +1,14 @@
 package com.walking.techie.partition;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.walking.techie.tasklet.DummyTasklet;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 
-@Slf4j
+import java.util.HashMap;
+import java.util.Map;
+
 public class RangePartitioner implements Partitioner {
   public static final Logger log = LoggerFactory.getLogger(DummyTasklet.class);
 

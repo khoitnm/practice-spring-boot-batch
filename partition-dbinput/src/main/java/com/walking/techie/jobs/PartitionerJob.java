@@ -4,10 +4,6 @@ import com.walking.techie.model.User;
 import com.walking.techie.partition.RangePartitioner;
 import com.walking.techie.processor.UserProcessor;
 import com.walking.techie.tasklet.DummyTasklet;
-import java.util.HashMap;
-import java.util.Map;
-import javax.sql.DataSource;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -33,7 +29,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
-@Slf4j
+import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 @EnableBatchProcessing
 public class PartitionerJob {

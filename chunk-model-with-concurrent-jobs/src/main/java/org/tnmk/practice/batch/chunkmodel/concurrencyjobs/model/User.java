@@ -1,8 +1,5 @@
 package org.tnmk.practice.batch.chunkmodel.concurrencyjobs.model;
 
-import lombok.Data;
-
-@Data
 public class User {
 
   private int id;

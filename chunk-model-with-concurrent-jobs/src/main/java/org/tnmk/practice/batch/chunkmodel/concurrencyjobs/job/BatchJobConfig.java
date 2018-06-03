@@ -70,14 +70,14 @@ public class BatchJobConfig {
     public ItemStreamReader<User> fileReader(@Value("#{jobParameters[" + JobParams.PARAM_INPUT_FILE_PATH + "]}") final String inputFilePath) {
         return FileItemReaderFactory.constructItemStreamReader(
                 inputFilePath,
-                Arrays.asList("id", "username", "password", "age"),
+                Arrays.asList("id", "username", "password", "age"), ",",
                 User.class,
                 0, -1);
     }
 
     @Bean
     @StepScope
-    public ItemProcessor<User, User> itemProcessor(){
+    public ItemProcessor<User, User> itemProcessor() {
         return new UserProcessor();
     }
 
@@ -87,7 +87,7 @@ public class BatchJobConfig {
 
         return FileItemWriterFactory.constructFileItemWriter(
                 outputFilePath,
-                Arrays.asList("id", "username", "password", "age"),
+                Arrays.asList("id", "username", "password", "age"), ",",
                 0, -1);
     }
 }

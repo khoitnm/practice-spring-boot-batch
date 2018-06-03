@@ -1,4 +1,4 @@
-package org.tnmk.practice.batch.chunkmodel.concurrencyjobs.joblauncher;
+package org.tnmk.common.batch.joblauncher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +13,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.NumberUtils;
-import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.consts.JobParams;
-import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.exception.BatchJobException;
+import org.tnmk.common.batch.exception.BatchJobException;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -60,7 +59,7 @@ public class JobLauncherHelper {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder()
                 // The job instance is determine by Job & JobParameters.
                 // This param ensure that each jobInstance will have a different Id.
-                .addString(JobParams.PARAM_JOB_INSTANCE_ID, UUID.randomUUID().toString(), true);
+                .addString(org.tnmk.common.batch.constants.JobParams.PARAM_JOB_INSTANCE_ID, UUID.randomUUID().toString(), true);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             Object entryValue = entry.getValue();
             if (entryValue == null) {

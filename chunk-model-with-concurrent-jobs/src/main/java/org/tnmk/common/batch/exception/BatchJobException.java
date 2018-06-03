@@ -1,4 +1,4 @@
-package org.tnmk.practice.batch.chunkmodel.concurrencyjobs.exception;
+package org.tnmk.common.batch.exception;
 
 public class BatchJobException extends RuntimeException {
     public BatchJobException(Throwable e){

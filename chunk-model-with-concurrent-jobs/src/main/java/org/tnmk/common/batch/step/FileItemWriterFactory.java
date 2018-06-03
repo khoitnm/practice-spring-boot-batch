@@ -1,4 +1,4 @@
-package org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job.step;
+package org.tnmk.common.batch.step;
 
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;

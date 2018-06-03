@@ -8,20 +8,17 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemStreamWriter;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.support.PassThroughItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.consts.JobParams;
-import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job.step.FileItemReaderFactory;
-import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job.step.FileItemWriterFactory;
+import org.tnmk.common.batch.step.FileItemReaderFactory;
+import org.tnmk.common.batch.step.FileItemWriterFactory;
 import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job.step.UserProcessor;
 import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.model.User;
 
-import javax.batch.runtime.context.StepContext;
 import java.util.Arrays;
 
 

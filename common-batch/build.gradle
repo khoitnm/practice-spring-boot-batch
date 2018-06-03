@@ -1,5 +1,5 @@
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.2.1'
+    gradleVersion = "${gradleVersion}"
 }
 
 apply plugin: 'java'
@@ -16,41 +16,29 @@ repositories {
     jcenter()
 }
 
-
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.2.RELEASE'
-    compile 'org.springframework:spring-oxm:4.3.7.RELEASE'
-    compile('org.springframework.boot:spring-boot-starter-batch:1.5.2.RELEASE')
-    testCompile('org.springframework.boot:spring-boot-starter-test:1.5.2.RELEASE')
+    //Because this is the library which depend on Spring framework, so it should be compiledOnly. The specific version of Spring should be provided by client code (the modules which use this common module)
+    //With this configuration way, the client code can use a little bit different spring version compare to this common module.
+    //Of course, the Spring version should be compatible enough that it doesn't break the compiling process.
+    compileOnly 'org.springframework.boot:spring-boot-starter-batch'
+    compileOnly "org.springframework.boot:spring-boot-starter-data-jpa"
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
+
 buildscript {
+    apply from: "version.gradle"
+
     repositories {
         mavenLocal()
         jcenter()
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE"
+        classpath("io.spring.gradle:dependency-management-plugin:${springGradleDependencyManagementVersion}")
     }
 }
-//
-//
-//task sourceJar(type: Jar) {
-//    from sourceSets.main.allJava
-//}
-//publishing {
-//    publications {
-//        mavenJava(MavenPublication) {
-//            from components.java
-////
-////            artifact sourceJar {
-////                classifier "sources"
-////            }
-//        }
-//    }
-//
-//}
-//publishing {
-//    repositories {
-//        mavenLocal()
-//    }
-//}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+    }
+}

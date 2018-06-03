@@ -7,12 +7,12 @@ import java.util.List;
 
 public class FileItemReaderFactory {
 
-    public static <T> FlatFileItemReader<T> constructItemStreamReader(final String inputFilePath, List<String> fileColumns, Class<T> itemClazz, final int fromRowIndex, final int toRowIndex) {
+    public static <T> FlatFileItemReader<T> constructItemStreamReader(final String inputFilePath, List<String> fileColumns, String columnDelimiter, Class<T> itemClazz, final int fromRowIndex, final int toRowIndex) {
         int headerLines = 1;
 
         FlatFileItemReader<T> reader = new FlatFileItemReader<>();
         reader.setResource(new ClassPathResource(inputFilePath));
-        reader.setLineMapper(LineMapperFactory.constructReaderLineMapper(fileColumns, itemClazz));
+        reader.setLineMapper(LineMapperFactory.constructReaderLineMapper(fileColumns, columnDelimiter, itemClazz));
         if (fromRowIndex >= 0) {
             reader.setCurrentItemCount(headerLines + fromRowIndex);
         }

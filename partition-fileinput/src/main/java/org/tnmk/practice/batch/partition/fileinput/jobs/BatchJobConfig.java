@@ -1,6 +1,5 @@
 package org.tnmk.practice.batch.partition.fileinput.jobs;
 
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -35,7 +34,6 @@ import org.tnmk.practice.batch.partition.fileinput.tasklet.FanInTasklet;
  * http://www.baeldung.com/spring-batch-tasklet-chunk
  * https://stackoverflow.com/questions/40041334/difference-between-step-tasklet-and-chunk-in-spring-batch
  */
-@Slf4j
 @Configuration
 @EnableBatchProcessing
 public class BatchJobConfig {

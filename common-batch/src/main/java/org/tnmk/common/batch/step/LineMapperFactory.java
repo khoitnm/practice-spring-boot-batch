@@ -13,16 +13,23 @@ import java.util.List;
 @Component
 public class LineMapperFactory {
 
-    public static <T> LineMapper<T> constructReaderLineMapper(List<String> columnNames, Class<T> itemClazz) {
+    /**
+     * @param columnNames
+     * @param columnDelimiter usually ","
+     * @param itemClazz
+     * @param <T>
+     * @return
+     */
+    public static <T> LineMapper<T> constructReaderLineMapper(List<String> columnNames, String columnDelimiter, Class<T> itemClazz) {
         DefaultLineMapper<T> lineMapper = new DefaultLineMapper<>();
-        lineMapper.setLineTokenizer(constructLineTokenizer(columnNames));
+        lineMapper.setLineTokenizer(constructLineTokenizer(columnNames, columnDelimiter));
         lineMapper.setFieldSetMapper(constructFieldSetMapper(itemClazz));
         return lineMapper;
     }
 
-    private static LineTokenizer constructLineTokenizer(List<String> columnNames) {
+    private static LineTokenizer constructLineTokenizer(List<String> columnNames, String columnDelimiter) {
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
-        lineTokenizer.setDelimiter(",");
+        lineTokenizer.setDelimiter(columnDelimiter);
         lineTokenizer.setNames(columnNames.toArray(new String[0]));
         return lineTokenizer;
     }

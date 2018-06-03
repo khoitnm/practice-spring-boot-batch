@@ -1,5 +1,6 @@
 package org.tnmk.practice.batch.partition.fileinput;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,10 @@ public class RunJobsConcurrencyApplicationTests {
 
     @Autowired
     AsyncBatchJobLauncher asyncBatchJobLauncher;
+
+    @Test
+    public void startContext(){
+    }
 
     //TODO At this moment, somehow running 2 job instances concurrency get stuck!!!
 //    @Test

@@ -1,6 +1,9 @@
 rootProject.name = "practice-spring-boot-batch"
 
+include 'common-batch'
 include 'partition-dbinput'
 include 'partition-fileinput'
 include 'simple-flow-with-concurrent-jobs'
 include 'chunk-model-with-concurrent-jobs'
+
+

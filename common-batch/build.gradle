@@ -1,0 +1,44 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = "${gradleVersion}"
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'io.spring.dependency-management'
+//apply plugin: 'idea'
+//apply plugin: 'maven-publish' //Publish common jar to maven
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    //Because this is the library which depend on Spring framework, so it should be compiledOnly. The specific version of Spring should be provided by client code (the modules which use this common module)
+    //With this configuration way, the client code can use a little bit different spring version compare to this common module.
+    //Of course, the Spring version should be compatible enough that it doesn't break the compiling process.
+    compileOnly 'org.springframework.boot:spring-boot-starter-batch'
+    compileOnly "org.springframework.boot:spring-boot-starter-data-jpa"
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+buildscript {
+    apply from: "version.gradle"
+
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath("io.spring.gradle:dependency-management-plugin:${springGradleDependencyManagementVersion}")
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+    }
+}

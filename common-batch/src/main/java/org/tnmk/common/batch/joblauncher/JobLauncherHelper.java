@@ -26,9 +26,10 @@ import java.util.UUID;
 @Service
 public class JobLauncherHelper {
     public static final Logger logger = LoggerFactory.getLogger(JobLauncherHelper.class);
+    public static final String PARAM_JOB_INSTANCE_ID = "jobInstanceid";
+
     @Autowired
     private JobLauncher jobLauncher;
-
 
     public void startJob(Job job, Object... params) {
         Map<String, Object> paramsMap = toParamsMap(params);
@@ -59,7 +60,7 @@ public class JobLauncherHelper {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder()
                 // The job instance is determine by Job & JobParameters.
                 // This param ensure that each jobInstance will have a different Id.
-                .addString(org.tnmk.common.batch.constants.JobParams.PARAM_JOB_INSTANCE_ID, UUID.randomUUID().toString(), true);
+                .addString(PARAM_JOB_INSTANCE_ID, UUID.randomUUID().toString(), true);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             Object entryValue = entry.getValue();
             if (entryValue == null) {

@@ -19,3 +19,12 @@ It can run concurrent jobs with a very simple step (just writing log).
 It can run concurrent jobs which reading data from different files. 
 Each job will have a processing step which runs with multi threads.
 
+Build project with Gradlew:
+```
+sh gradlew clean build
+```
+or if you want to skip tests, run:
+```
+sh gradlew clean build -x test
+```
+

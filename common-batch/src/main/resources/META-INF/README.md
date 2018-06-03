@@ -1,0 +1,2 @@
+This file help the Annotated file (with @Service or @Component...) will be loaded into the SpringApplicationContext in the client application.
+The client SpringApplication doesn't need to @ScanComponent on the common library packages.

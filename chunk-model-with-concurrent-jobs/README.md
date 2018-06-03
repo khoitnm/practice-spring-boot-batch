@@ -1,6 +1,3 @@
-The sample code for Batch Partition which I copied and edited from https://github.com/walkingtechie/spring-batch-partition
-
-Some updating code:
-- Replace MySQL by an Embedded DB.
-- Fix error when missing logger or setter/getter fields.
-- Change DB Input to File Input: the Batch will read data from a file instead of a DB.
+TODO:
++ To handle with really large file, use partition to split file before processing.
+https://stackoverflow.com/questions/25021689/spring-batch-reading-a-large-flat-file-choices-to-scale-horizontally

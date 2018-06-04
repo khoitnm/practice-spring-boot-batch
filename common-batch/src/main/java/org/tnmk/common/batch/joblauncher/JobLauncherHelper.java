@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.NumberUtils;
 import org.tnmk.common.batch.exception.BatchJobException;
+import org.tnmk.common.batch.jobparam.JobParams;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +27,6 @@ import java.util.UUID;
 @Service
 public class JobLauncherHelper {
     public static final Logger logger = LoggerFactory.getLogger(JobLauncherHelper.class);
-    public static final String PARAM_JOB_INSTANCE_ID = "jobInstanceid";
 
     @Autowired
     private JobLauncher jobLauncher;
@@ -60,7 +60,7 @@ public class JobLauncherHelper {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder()
                 // The job instance is determine by Job & JobParameters.
                 // This param ensure that each jobInstance will have a different Id.
-                .addString(PARAM_JOB_INSTANCE_ID, UUID.randomUUID().toString(), true);
+                .addString(JobParams.PARAM_JOB_INSTANCE_ID, UUID.randomUUID().toString(), true);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             Object entryValue = entry.getValue();
             if (entryValue == null) {

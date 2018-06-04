@@ -1,10 +1,13 @@
-package org.tnmk.practice.batch.chunkmodel.concurrencyjobs.job.step;
+package org.tnmk.practice.batch.faninstep.job.step;
 
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.tnmk.common.batch.jobparam.JobParams;
-import org.tnmk.practice.batch.chunkmodel.concurrencyjobs.model.User;
+import org.tnmk.practice.batch.faninstep.model.User;
 
+/**
+ * This is the processor of fan-out step.
+ */
 public class UserProcessor implements ItemProcessor<User, User> {
 
     @Value("#{jobParameters['" + JobParams.PARAM_JOB_INSTANCE_ID + "']}")

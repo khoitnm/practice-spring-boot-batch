@@ -1,0 +1,5 @@
+#Prevent batch jobs from starting automatically
+spring:
+  batch:
+    job:
+      enabled: false

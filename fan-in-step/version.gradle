@@ -1,0 +1,8 @@
+ext.gradleVersion = '4.7'
+
+//ORG.TNMK
+ext.commonBatchVersion = '0.0.1-SNAPSHOT'
+
+//Spring
+ext.springBootVersion = '2.0.2.RELEASE'
+ext.springGradleDependencyManagementVersion = '1.0.5.RELEASE'

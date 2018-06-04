@@ -78,12 +78,12 @@ public class BatchJobConfig {
     @Bean
     public Step fanInStep() {
         return stepBuilderFactory.get("fan-in step")
-                //If we new instance of FanInTasklet here instead of declaring a bean, it will cause Thread Lock Exception.
+                //IMPORTANT: If we new instance of FanInTasklet here instead of declaring a bean, it will cause Thread Lock Exception.
                 .tasklet(fanInTasklet())
                 .build();
     }
 
-    //FIXME I can use JobScope, StepScope, or even SingletonScope here, the program runs just fine. But there's always one FanIn in one of concurrent Jobs doesn't get enough items (and no exception)!!!
+    //I can use JobScope, StepScope, or even SingletonScope here, the program runs just fine?!
     @Bean
 //    @JobScope
     public FanInTasklet<List<User>> fanInTasklet(){

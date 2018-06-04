@@ -22,18 +22,25 @@ public class SaveItemsToStepContextWriter<ITEM> implements ItemWriter<ITEM> {
     @BeforeStep
     public void beforeStep(StepExecution stepExecution) {
         this.stepExecution = stepExecution;
+        ExecutionContext stepContext = this.stepExecution.getExecutionContext();
+        List<ITEM> list = (List<ITEM>) stepContext.get(itemsKeyInStep);
+        //Note: always initiate an empty list here. Never initiate an empty list in {@link write(...) method to avoid hidden error because of multi-thread.
+        if (list == null){
+            list = Collections.synchronizedList(new ArrayList<>());//The list must be thread-safe.
+            stepContext.put(itemsKeyInStep, list);
+        }
     }
 
     @Override
     public void write(List<? extends ITEM> items) {
         ExecutionContext stepContext = this.stepExecution.getExecutionContext();
         List<ITEM> list = (List<ITEM>) stepContext.get(itemsKeyInStep);
-        if (list != null) {
-            list.addAll(items);
-        } else {
-            list = Collections.synchronizedList(new ArrayList<>(items));
-        }
-        stepContext.put(itemsKeyInStep, list);
+        list.addAll(items);
+
+        //Important note to avoid hidden bug:
+        // You may think about initiating an empty list if it's is null here, but it will cause hidden error because of multi-thread.
+        // the problem could happen when writer threads running concurrently, the checking null could happen twice or more!!!
+        // It was fixed by moving the list initiation to beforeStep block which is executed before any thread are processed.
     }
 
 

@@ -23,6 +23,9 @@ import java.util.UUID;
 
 /**
  * This is just a helper class to start a job more easier.
+ *
+ * This class looks a little bit complicated, but its idea is very simple.
+ * It just provide you a convenient way to starting a job with the {@link Map} or {@link Object[]} parameter instead of an instance of {@link JobParameters}.
  */
 @Service
 public class JobLauncherHelper {
@@ -31,6 +34,20 @@ public class JobLauncherHelper {
     @Autowired
     private JobLauncher jobLauncher;
 
+    /**
+     * @param job
+     * @param params
+     * This is actually just a convenient way to start a job with {@link Map} parameters.<br/>
+     * The odd element will be the parameter name, and the even element will be the parameter value.<br/>
+     * <pre>
+     * <b>For example:</b>
+     * <ul>
+     *     <li><code>startJob(job, "paramName1", "paramValue1", "paramName2", "paramValue2")</code></li>
+     *     <li><code>startJob(job, "username", "kevin.tran", "age", 99, "description","a live long funny guy!")</code></li>
+     * </ul>
+     * </pre>
+     * That's why the number of elements in params should be even.<br/>
+     */
     public void startJob(Job job, Object... params) {
         Map<String, Object> paramsMap = toParamsMap(params);
         startJob(job, paramsMap);

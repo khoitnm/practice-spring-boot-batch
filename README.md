@@ -19,6 +19,11 @@ It can run concurrent jobs with a very simple step (just writing log).
 It can run concurrent jobs which reading data from different files. 
 Each job will have a processing step which runs with multi threads.
 
+5. `fan-in-step`:
+Similar to `chunk-model-with-concurrent-job`, this module will read rows in file concurrently in multi-thread (fan-out step).
+After all threads are finished, we will do something with a all processed rows (this step is called fan-in-step). 
+This demo will show how to pass the result of concurrent threads from fan-out-step to the fan-in-step.
+
 ## Build
 Build project with Gradlew:
 ```

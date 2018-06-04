@@ -19,6 +19,7 @@ It can run concurrent jobs with a very simple step (just writing log).
 It can run concurrent jobs which reading data from different files. 
 Each job will have a processing step which runs with multi threads.
 
+## Build
 Build project with Gradlew:
 ```
 sh gradlew clean build
@@ -27,4 +28,20 @@ or if you want to skip tests, run:
 ```
 sh gradlew clean build -x test
 ```
+
+## Additional References
+1. https://spring.io/guides
+2. https://spring.io/guides/gs/batch-processing/
+3. https://spring.io/guides/gs/yarn-batch-restart/
+4. https://spring.io/guides/gs/yarn-batch-processing/
+5. Good diagrams
+    http://www.desynit.com/dev-zone/java/breaking-a-spring-batch-job-into-smaller-steps/ 
+
+6. Compare the learning curve and features of Spring Batch vs. EasyBatch
+    https://benas.github.io/2014/03/03/spring-batch-vs-easy-batch-feature-comparison.html 
+7. Passing data to further steps
+    https://docs.spring.io/spring-batch/trunk/reference/html/patterns.html#passingDataToFutureSteps
+8. Spring Batch Samples: 
+    https://github.com/spring-projects/spring-batch/tree/master/spring-batch-samples#partitioning-sample    
+
 

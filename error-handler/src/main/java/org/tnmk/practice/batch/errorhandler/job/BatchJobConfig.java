@@ -2,7 +2,6 @@ package org.tnmk.practice.batch.errorhandler.job;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.core.configuration.annotation.*;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.listener.ExecutionContextPromotionListener;
@@ -14,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.tnmk.common.batch.job.step.SaveItemsToStepContextWriter;
+import org.tnmk.common.batch.step.SaveItemsToStepContextWriter;
 import org.tnmk.common.batch.step.FileItemReaderFactory;
 import org.tnmk.practice.batch.errorhandler.consts.JobParams;
 import org.tnmk.practice.batch.errorhandler.job.step.FanInTasklet;

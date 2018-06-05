@@ -1,1 +1,0 @@
-I'm considering moving this package to the `common-batch` module.

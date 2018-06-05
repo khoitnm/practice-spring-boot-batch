@@ -1,4 +1,4 @@
-package org.tnmk.common.batch.job.step;
+package org.tnmk.common.batch.step;
 
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;

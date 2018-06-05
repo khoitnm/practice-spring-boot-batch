@@ -67,7 +67,10 @@ sh gradlew clean build -x test
 12. Scaling with remote partitioning.
     https://asardana.com/2018/01/01/scaling-spring-batch-on-aws-with-remote-partitioning/   
 13. Error Handling
-    https://terasoluna-batch.github.io/guideline/5.0.0.RELEASE/en/Ch06_ExceptionHandling.html     
+    https://terasoluna-batch.github.io/guideline/5.0.0.RELEASE/en/Ch06_ExceptionHandling.html
+14. Spring Batch Admin
+    https://docs.spring.io/spring-batch-admin/trunk/
+    https://docs.spring.io/spring-batch-admin/trunk/reference/reference.xhtml         
         
 
 

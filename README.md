@@ -37,6 +37,9 @@ or if you want to skip tests, run:
 sh gradlew clean build -x test
 ```
 
+## TODO
++ Repeat step when cannot reading file (maybe because of some network error)
++ Error handler.
 
 ## Additional References
 1. https://spring.io/guides

@@ -44,17 +44,19 @@ public class BatchJobConfig {
     public Job fileProcessingBatchJob() {
         return jobBuilderFactory.get("fileProcessingBatchJob")
                 .incrementer(new RunIdIncrementer())
-                .start(fanOutStep())
+                .start(fanOutStep(null, null))
                 .next(fanInStep())
                 .build();
     }
 
     @JobScope
     @Bean
-    public Step fanOutStep() {
+    public Step fanOutStep(
+            @Value("#{jobParameters[" + JobParams.PARAM_CHUNK_SIZE + "]}") final Integer chunkSize,
+            @Value("#{jobParameters[" + JobParams.PARAM_THREADS_COUNT + "]}") final Integer threadsCount) {
         return stepBuilderFactory.get("fan-out processing step")
                 .listener(executionListenerSupport())
-                .<User, User>chunk(5)
+                .<User, User>chunk(chunkSize)
                 .reader(fileReader(null))
                 .processor(itemProcessor())
                 .writer(itemWriter())
@@ -62,7 +64,7 @@ public class BatchJobConfig {
                 //Each chunk will run on a separated thread
                 //There's only maximum 10 concurrent chunks are handled at the same time.
                 .taskExecutor(new SimpleAsyncTaskExecutor())
-                .throttleLimit(10)
+                .throttleLimit(threadsCount)
                 .build();
     }
 
@@ -123,13 +125,4 @@ public class BatchJobConfig {
     public SaveItemsToStepContextWriter<User> itemWriter() {
         return new SaveItemsToStepContextWriter<>(StepContextItems.STEP_KEY_ITEMS);
     }
-//    @Bean
-//    @StepScope
-//    public FlatFileItemWriter<User> itemWriter(@Value("#{jobParameters[" + JobParams.PARAM_OUTPUT_FILE_PATH + "]}") final String outputFilePath) {
-//
-//        return FileItemWriterFactory.constructFileItemWriter(
-//                outputFilePath,
-//                Arrays.asList("id", "username", "password", "age"), ",",
-//                0, -1);
-//    }
 }

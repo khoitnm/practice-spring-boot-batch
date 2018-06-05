@@ -23,7 +23,7 @@ import java.util.UUID;
 
 /**
  * This is just a helper class to start a job more easier.
- *
+ * <p>
  * This class looks a little bit complicated, but its idea is very simple.
  * It just provide you a convenient way to starting a job with the {@link Map} or {@link Object[]} parameter instead of an instance of {@link JobParameters}.
  */
@@ -36,17 +36,16 @@ public class JobLauncherHelper {
 
     /**
      * @param job
-     * @param params
-     * This is actually just a convenient way to start a job with {@link Map} parameters.<br/>
-     * The odd element will be the parameter name, and the even element will be the parameter value.<br/>
-     * <pre>
-     * <b>For example:</b>
-     * <ul>
-     *     <li><code>startJob(job, "paramName1", "paramValue1", "paramName2", "paramValue2")</code></li>
-     *     <li><code>startJob(job, "username", "kevin.tran", "age", 99, "description","a live long funny guy!")</code></li>
-     * </ul>
-     * </pre>
-     * That's why the number of elements in params should be even.<br/>
+     * @param params This is actually just a convenient way to start a job with {@link Map} parameters.<br/>
+     *               The odd element will be the parameter name, and the even element will be the parameter value.<br/>
+     *               <pre>
+     *               <b>For example:</b>
+     *               <ul>
+     *                   <li><code>startJob(job, "paramName1", "paramValue1", "paramName2", "paramValue2")</code></li>
+     *                   <li><code>startJob(job, "username", "kevin.tran", "age", 99, "description","a live long funny guy!")</code></li>
+     *               </ul>
+     *               </pre>
+     *               That's why the number of elements in params should be even.<br/>
      */
     public void startJob(Job job, Object... params) {
         Map<String, Object> paramsMap = toParamsMap(params);
@@ -58,6 +57,10 @@ public class JobLauncherHelper {
         startJobWithParameters(job, jobParameters);
     }
 
+    /**
+     * @param params the params value should be only basic type such as String, Integer, Long, Float, Double, Date.
+     * @return
+     */
     private Map<String, Object> toParamsMap(Object... params) {
         Map<String, Object> paramsMap = new HashMap<>(params.length / 2);
         String paramKey = null;
@@ -73,6 +76,7 @@ public class JobLauncherHelper {
         return paramsMap;
     }
 
+
     private JobParameters toJobParameters(Map<String, Object> params) {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder()
                 // The job instance is determine by Job & JobParameters.
@@ -85,15 +89,21 @@ public class JobLauncherHelper {
             }
             if (entryValue instanceof String) {
                 jobParametersBuilder.addString(entry.getKey(), (String) entryValue);
-            } else if (entryValue.getClass().isAssignableFrom(Number.class)) {
+            } else if (Number.class.isAssignableFrom(entryValue.getClass())) {
                 Number numVal = (Number) entryValue;
-                if (entryValue.getClass().isAssignableFrom(Long.class) || entryValue.getClass().isAssignableFrom(Integer.class)) {
+                if (Long.class.isAssignableFrom(entryValue.getClass()) || Integer.class.isAssignableFrom(entryValue.getClass())) {
                     jobParametersBuilder.addLong(entry.getKey(), NumberUtils.convertNumberToTargetClass(numVal, Long.class));
-                } else if (entryValue.getClass().isAssignableFrom(Float.class) || entryValue.getClass().isAssignableFrom(Double.class)) {
+                } else if (Float.class.isAssignableFrom(entryValue.getClass()) || Double.class.isAssignableFrom(entryValue.getClass())) {
                     jobParametersBuilder.addDouble(entry.getKey(), NumberUtils.convertNumberToTargetClass(numVal, Double.class));
                 } else if (entryValue instanceof Date) {
                     jobParametersBuilder.addDate(entry.getKey(), (Date) entryValue);
+                } else {
+                    String msg = String.format("The argument type is not supported. {%s, %s - type: %s}", entry.getKey(), entryValue, entryValue.getClass());
+                    throw new IllegalArgumentException(msg);
                 }
+            } else {
+                String msg = String.format("The argument type is not supported. {%s, %s - type: %s}", entry.getKey(), entryValue, entryValue.getClass());
+                throw new IllegalArgumentException(msg);
             }
         }
         return jobParametersBuilder.toJobParameters();

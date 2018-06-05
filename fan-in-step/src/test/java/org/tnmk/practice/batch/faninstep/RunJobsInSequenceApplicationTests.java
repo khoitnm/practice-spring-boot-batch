@@ -18,8 +18,8 @@ public class RunJobsInSequenceApplicationTests {
 
     @Test
     public void startFileProcessingBatchJob() throws InterruptedException, ExecutionException {
-        fileProcessingJobLauncherHelper.startFileProcessJob("/users_10.csv", "out/csv_10/users.processed.");
-        fileProcessingJobLauncherHelper.startFileProcessJob("/heroes_5.csv", "out/csv_5/heroes.processed.");
+        fileProcessingJobLauncherHelper.startFileProcessJob("/users_10.csv", 3, 3);
+        fileProcessingJobLauncherHelper.startFileProcessJob("/heroes_5.csv", 2,3);
     }
 
 }

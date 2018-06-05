@@ -8,21 +8,23 @@ import org.springframework.stereotype.Service;
 import org.tnmk.practice.batch.faninstep.consts.JobParams;
 import org.tnmk.common.batch.joblauncher.JobLauncherHelper;
 
+import static org.tnmk.practice.batch.faninstep.consts.JobParams.PARAM_THREADS_COUNT;
+
 /**
  * This is just a helper class to start a job more easier.
  */
 @Service
 public class FileProcessingJobLauncherHelper {
-    public static final Logger logger = LoggerFactory.getLogger(FileProcessingJobLauncherHelper.class);
     @Autowired
     private JobLauncherHelper jobLauncherHelper;
     @Autowired
     private Job fileProcessingJob;
 
-    public void startFileProcessJob(String inputFilePath, String outputFilePath) {
+    public void startFileProcessJob(String inputFilePath, int chunkSize, int threadsCount) {
         jobLauncherHelper.startJob(fileProcessingJob,
                 JobParams.PARAM_INPUT_FILE_PATH, inputFilePath,
-                JobParams.PARAM_OUTPUT_FILE_PATH, outputFilePath
+                JobParams.PARAM_CHUNK_SIZE, chunkSize,
+                JobParams.PARAM_THREADS_COUNT, threadsCount
         );
     }
 }

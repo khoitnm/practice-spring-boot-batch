@@ -18,8 +18,8 @@ public class AsyncBatchJobLauncher {
     FileProcessingJobLauncherHelper fileProcessingJobLauncherHelper;
 
     @Async
-    public Future<String> run(String inputFilePath, String outputPathWithFilePrefix) {
-        fileProcessingJobLauncherHelper.startFileProcessJob(inputFilePath, outputPathWithFilePrefix);
-        return new AsyncResult<>("Finish " + outputPathWithFilePrefix);
+    public Future<String> run(String inputFilePath, int chunkSize, int threadsCount) {
+        fileProcessingJobLauncherHelper.startFileProcessJob(inputFilePath, chunkSize, threadsCount);
+        return new AsyncResult<>("Finish " + inputFilePath);
     }
 }

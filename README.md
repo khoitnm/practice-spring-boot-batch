@@ -25,9 +25,10 @@ And then those rows will be written back to different files, each thread will wr
 Similar to `chunk-model-with-concurrent-job`, this module will read rows in file concurrently in multi-thread (fan-out step).<br/>
 After all threads are finished, we will do something with a all processed rows (this step is called fan-in-step).<br/>
 This demo will show how to pass the result of concurrent threads from fan-out-step to the fan-in-step.<br/>
+However, this demo will not write processed rows to any file, it just write logs in the fan-in-step.
 
 ## Build
-Build project with Gradlew:
+You can build project with `gradlew` (if you already install gradle in your local machine, you can run with `gradle` instead of `gradlew`):
 ```
 sh gradlew clean build
 ```
@@ -35,6 +36,7 @@ or if you want to skip tests, run:
 ```
 sh gradlew clean build -x test
 ```
+
 
 ## Additional References
 1. https://spring.io/guides

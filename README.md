@@ -13,16 +13,18 @@ Some applied concepts:
     + **Warn**: it has some problem when running concurrent jobs
 
 3. `simple-flow-with-concurrent-jobs`: 
-It can run concurrent jobs with a very simple step (just writing log). 
+It can run concurrent jobs. Each job will run a very simple step (just writing log). 
 
 4. `chunk-model-with-concurrent-jobs`: 
-It can run concurrent jobs which reading data from different files. 
-Each job will have a processing step which runs with multi threads.
+It can run concurrent jobs which reading data from different files.<br/>
+Each job will read rows in a separated file.<br/>
+Those rows will be read concurrently in many threads.<br/>
+And then those rows will be written back to different files, each thread will write rows to a separated file.<br/>
 
 5. `fan-in-step`:
-Similar to `chunk-model-with-concurrent-job`, this module will read rows in file concurrently in multi-thread (fan-out step).
-After all threads are finished, we will do something with a all processed rows (this step is called fan-in-step). 
-This demo will show how to pass the result of concurrent threads from fan-out-step to the fan-in-step.
+Similar to `chunk-model-with-concurrent-job`, this module will read rows in file concurrently in multi-thread (fan-out step).<br/>
+After all threads are finished, we will do something with a all processed rows (this step is called fan-in-step).<br/>
+This demo will show how to pass the result of concurrent threads from fan-out-step to the fan-in-step.<br/>
 
 ## Build
 Build project with Gradlew:

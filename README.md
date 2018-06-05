@@ -44,7 +44,9 @@ sh gradlew clean build -x test
 ## Additional References
 1. https://spring.io/guides
 2. https://spring.io/guides/gs/batch-processing/
-3. https://spring.io/guides/gs/yarn-batch-restart/
+3. Restart step:<br/>
+    https://spring.io/guides/gs/yarn-batch-restart/ <br/>
+    https://stackoverflow.com/questions/35782041/spring-batch-repeats-step-with-chunk-size-1-even-after-success <br/>
 4. https://spring.io/guides/gs/yarn-batch-processing/
 5. Good diagrams
     http://www.desynit.com/dev-zone/java/breaking-a-spring-batch-job-into-smaller-steps/ 
@@ -54,6 +56,18 @@ sh gradlew clean build -x test
 7. Passing data to further steps
     https://docs.spring.io/spring-batch/trunk/reference/html/patterns.html#passingDataToFutureSteps
 8. Spring Batch Samples: 
-    https://github.com/spring-projects/spring-batch/tree/master/spring-batch-samples#partitioning-sample    
+    https://github.com/spring-projects/spring-batch/tree/master/spring-batch-samples#partitioning-sample
+9. Suggest don't need @Bean and @StepScope for Step, Reader, Processor, Writer. But in that case, you have to add `step.afterPropertiesSet()` after instantiate those objects.
+    It also shows how to run many steps concurrently.
+    https://stackoverflow.com/questions/37238813/spring-batch-looping-a-reader-processor-writer-step/37271735#37271735
+10. Generate steps dynamically
+    https://stackoverflow.com/questions/37310658/spring-batch-how-to-generate-parallel-steps-based-on-params-created-in-a-previ/37315830#37315830    
+11. Skip step when error and go to next step:
+    https://stackoverflow.com/questions/39134634/spring-batch-java-config-skip-step-when-exception-and-go-to-next-steps/39143725#39143725    
+12. Scaling with remote partitioning.
+    https://asardana.com/2018/01/01/scaling-spring-batch-on-aws-with-remote-partitioning/   
+13. Error Handling
+    https://terasoluna-batch.github.io/guideline/5.0.0.RELEASE/en/Ch06_ExceptionHandling.html     
+        
 
 

@@ -1,0 +1,18 @@
+#Prevent batch jobs from starting automatically
+spring:
+  batch:
+    job:
+      enabled: false
+
+    # Enable the pre-packaged SQL initialization scripts for Spring Batch on most popular database platforms.
+    # Spring Boot can detect your database type and execute those scripts on startup.
+    # If you use an embedded database, this happens by default.
+    initialize-schema: always
+
+  # The DB Connection to In-Memory DB. Actually you don't need this configuration, they are all in the default configuration.
+  # I just put it here to show you how to configure the DB for Batch job. If you comment out the datasource block, the could should still run fine.
+  datasource:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:hsqldb:mem:myDb
+    username: sa
+    password: sa

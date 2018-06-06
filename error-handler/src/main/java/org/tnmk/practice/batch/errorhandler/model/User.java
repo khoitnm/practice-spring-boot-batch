@@ -2,20 +2,21 @@ package org.tnmk.practice.batch.errorhandler.model;
 
 public class User {
 
-    private int id;
+    private Integer id;
     private String username;
     private String password;
-    private int age;
+    private Integer age;
 
+    @Override
     public String toString() {
         return String.format("{%s, %s}", id, username);
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -35,11 +36,13 @@ public class User {
         this.password = password;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
+
+
 }

@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.tnmk.common.batch.step.SaveItemsToStepContextWriter;
 import org.tnmk.common.batch.step.FileItemReaderFactory;
+import org.tnmk.common.batch.step.SaveItemsToStepContextWriter;
 import org.tnmk.practice.batch.errorhandler.consts.JobParams;
+import org.tnmk.practice.batch.errorhandler.exceptionlistener.ItemFailureChunkLoggerListener;
+import org.tnmk.practice.batch.errorhandler.exceptionlistener.ItemFailureLoggerListener;
 import org.tnmk.practice.batch.errorhandler.job.step.FanInTasklet;
 import org.tnmk.practice.batch.errorhandler.job.step.StepContextItems;
 import org.tnmk.practice.batch.errorhandler.job.step.UserProcessor;
@@ -42,29 +44,32 @@ public class BatchJobConfig {
     @Bean
     public Job fileProcessingBatchJob() {
         return jobBuilderFactory.get("fileProcessingBatchJob")
-                .incrementer(new RunIdIncrementer())
-                .start(fanOutStep(null, null))
-                .next(errorHandler())
-                .build();
+            .incrementer(new RunIdIncrementer())
+            .start(fanOutStep(null, null))
+            .next(errorHandler())
+            .build();
     }
 
     @JobScope
     @Bean
     public Step fanOutStep(
-            @Value("#{jobParameters[" + JobParams.PARAM_CHUNK_SIZE + "]}") final Integer chunkSize,
-            @Value("#{jobParameters[" + JobParams.PARAM_THREADS_COUNT + "]}") final Integer threadsCount) {
+        @Value("#{jobParameters[" + JobParams.PARAM_CHUNK_SIZE + "]}") final Integer chunkSize,
+        @Value("#{jobParameters[" + JobParams.PARAM_THREADS_COUNT + "]}") final Integer threadsCount) {
         return stepBuilderFactory.get("fan-out processing step")
-                .listener(executionListenerSupport())
-                .<User, User>chunk(chunkSize)
-                .reader(fileReader(null))
-                .processor(itemProcessor())
-                .writer(itemWriter())
+            .listener(executionListenerSupport())
+            .<User, User>chunk(chunkSize)
+            .reader(fileReader(null))
+            .processor(itemProcessor())
+            .writer(itemWriter())
+            .listener(new ItemFailureChunkLoggerListener())
 
-                //Each chunk will run on a separated thread
-                //There's only maximum 10 concurrent chunks are handled at the same time.
-                .taskExecutor(new SimpleAsyncTaskExecutor())
-                .throttleLimit(threadsCount)
-                .build();
+            //Each chunk will run on a separated thread
+            //There's only maximum 10 concurrent chunks are handled at the same time.
+            .taskExecutor(new SimpleAsyncTaskExecutor())
+            .throttleLimit(threadsCount)
+
+            .listener(new ItemFailureLoggerListener<>())
+            .build();
     }
 
     @StepScope
@@ -79,16 +84,16 @@ public class BatchJobConfig {
     @Bean
     public Step errorHandler() {
         return stepBuilderFactory.get("fan-in step")
-                //IMPORTANT: If we new instance of FanInTasklet here instead of declaring a bean, it will cause Thread Lock Exception.
-                .tasklet(fanInTasklet())
-                .build();
+            //IMPORTANT: If we new instance of FanInTasklet here instead of declaring a bean, it will cause Thread Lock Exception.
+            .tasklet(fanInTasklet())
+            .build();
     }
 
     //I can use JobScope, StepScope, or even SingletonScope here, the program runs just fine?!
     @Bean
 //    @JobScope
-    public FanInTasklet<List<User>> fanInTasklet(){
-        return new FanInTasklet<List<User>>(StepContextItems.STEP_KEY_ITEMS);
+    public FanInTasklet<List<User>> fanInTasklet() {
+        return new FanInTasklet<>(StepContextItems.STEP_KEY_ITEMS);
     }
 
     /**
@@ -100,10 +105,10 @@ public class BatchJobConfig {
     @StepScope
     public FlatFileItemReader<User> fileReader(@Value("#{jobParameters[" + JobParams.PARAM_INPUT_FILE_PATH + "]}") final String inputFilePath) {
         return FileItemReaderFactory.constructItemStreamReader(
-                inputFilePath,
-                Arrays.asList("id", "username", "password", "age"), ",",
-                User.class,
-                0, -1);
+            inputFilePath,
+            Arrays.asList("id", "username", "password", "age"), ",",
+            User.class,
+            0, -1);
     }
 
     @Bean

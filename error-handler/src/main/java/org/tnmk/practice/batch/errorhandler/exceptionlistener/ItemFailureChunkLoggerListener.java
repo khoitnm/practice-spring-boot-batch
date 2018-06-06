@@ -13,6 +13,7 @@ import java.util.List;
 
 public class ItemFailureChunkLoggerListener implements ChunkListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemFailureChunkLoggerListener.class);
+    private static int ERROR_INDEX = 0;
 
     @Override
     public void beforeChunk(ChunkContext context) {
@@ -39,12 +40,13 @@ public class ItemFailureChunkLoggerListener implements ChunkListener {
                     fieldErrorsStringBuilder.append("field name: ").append(fieldError.getField())
                         .append("field value (error): ").append(fieldError.getRejectedValue());
                 }
-                LOGGER.error("error chunk:" +
+                LOGGER.error("error chunk[{}]:" +
                         "\n\t input: {}" +
                         "\n\t line number: {}" +
                         "\n\t error target {}" +
                         "\n\t error fields: {}" +
                         "\n\t exception: {}",
+                    ERROR_INDEX,
                     flatFileParseException.getInput(),
                     flatFileParseException.getLineNumber(),
                     errorTarget,
@@ -55,7 +57,8 @@ public class ItemFailureChunkLoggerListener implements ChunkListener {
                 LOGGER.error("error chunk exception: " + exception.getMessage());
             }
         }
-        LOGGER.error("error chunk: " + context);
+        LOGGER.error("error chunk index conclusion: " + ERROR_INDEX + "_" + context);
+        ERROR_INDEX++;
     }
 
     private BindingResult getBindingResult(FlatFileParseException flatFileParseException) {

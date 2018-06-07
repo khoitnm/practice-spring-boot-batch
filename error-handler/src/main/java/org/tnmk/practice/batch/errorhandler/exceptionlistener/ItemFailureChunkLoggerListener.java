@@ -8,7 +8,7 @@ import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.validation.FieldError;
 import org.tnmk.common.batch.errorhandler.FlatFileParseExceptionUtils;
 import org.tnmk.practice.batch.errorhandler.exception.BatchAbortException;
-import org.tnmk.practice.batch.errorhandler.exception.SkipRowException;
+import org.tnmk.practice.batch.errorhandler.exception.SkipableRowException;
 import org.tnmk.practice.batch.errorhandler.model.User;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class ItemFailureChunkLoggerListener implements ChunkListener {
                 if (errorUser.getId() == null) {
                     throw new BatchAbortException("Cannot get id from the row. Input data is wrong. Abort the whole batch.", flatFileParseException);
                 } else {
-                    throw new SkipRowException("The row is error, skip it.", flatFileParseException);
+                    throw new SkipableRowException("The row is error, skip it.", flatFileParseException);
                 }
             } else if (object instanceof Exception) {
                 Exception exception = (Exception) object;

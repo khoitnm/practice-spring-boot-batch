@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ChunkListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.file.FlatFileParseException;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.tnmk.common.batch.errorhandler.FlatFileParseExceptionUtils;
+import org.tnmk.practice.batch.errorhandler.exception.BatchAbortException;
+import org.tnmk.practice.batch.errorhandler.exception.SkipRowException;
+import org.tnmk.practice.batch.errorhandler.model.User;
 
 import java.util.List;
 
@@ -32,26 +34,17 @@ public class ItemFailureChunkLoggerListener implements ChunkListener {
             Object object = context.getAttribute(attribute);
             if (object instanceof FlatFileParseException) {
                 FlatFileParseException flatFileParseException = (FlatFileParseException) object;
-                Object errorTarget = getErrorTarget(flatFileParseException);
-                List<FieldError> fieldErrors = getFieldErrors(flatFileParseException);
+                Object errorTarget = FlatFileParseExceptionUtils.getErrorTarget(flatFileParseException);
+                List<FieldError> fieldErrors = FlatFileParseExceptionUtils.getFieldErrors(flatFileParseException);
+                writeErrorLog(errorTarget, fieldErrors, flatFileParseException);
 
-                StringBuilder fieldErrorsStringBuilder = new StringBuilder("Field Errors: ");
-                for (FieldError fieldError : fieldErrors) {
-                    fieldErrorsStringBuilder.append("field name: ").append(fieldError.getField())
-                        .append("field value (error): ").append(fieldError.getRejectedValue());
+                //Specific handler
+                User errorUser = (User) errorTarget;
+                if (errorUser.getId() == null) {
+                    throw new BatchAbortException("Cannot get id from the row. Input data is wrong. Abort the whole batch.", flatFileParseException);
+                } else {
+                    throw new SkipRowException("The row is error, skip it.", flatFileParseException);
                 }
-                LOGGER.error("error chunk[{}]:" +
-                        "\n\t input: {}" +
-                        "\n\t line number: {}" +
-                        "\n\t error target {}" +
-                        "\n\t error fields: {}" +
-                        "\n\t exception: {}",
-                    ERROR_INDEX,
-                    flatFileParseException.getInput(),
-                    flatFileParseException.getLineNumber(),
-                    errorTarget,
-                    fieldErrorsStringBuilder.toString(),
-                    flatFileParseException.getMessage());
             } else if (object instanceof Exception) {
                 Exception exception = (Exception) object;
                 LOGGER.error("error chunk exception: " + exception.getMessage());
@@ -61,19 +54,23 @@ public class ItemFailureChunkLoggerListener implements ChunkListener {
         ERROR_INDEX++;
     }
 
-    private BindingResult getBindingResult(FlatFileParseException flatFileParseException) {
-        BindException bindException = (BindException) flatFileParseException.getCause();
-        return bindException.getBindingResult();
+    private void writeErrorLog(Object errorTarget, List<FieldError> fieldErrors, FlatFileParseException flatFileParseException) {
+        StringBuilder fieldErrorsStringBuilder = new StringBuilder("Field Errors: ");
+        for (FieldError fieldError : fieldErrors) {
+            fieldErrorsStringBuilder.append("field name: ").append(fieldError.getField())
+                .append("field value (error): ").append(fieldError.getRejectedValue());
+        }
+        LOGGER.error("error chunk[{}]:" +
+                "\n\t input: {}" +
+                "\n\t line number: {}" +
+                "\n\t error target {}" +
+                "\n\t error fields: {}" +
+                "\n\t exception: {}",
+            ERROR_INDEX,
+            flatFileParseException.getInput(),
+            flatFileParseException.getLineNumber(),
+            errorTarget,
+            fieldErrorsStringBuilder.toString(),
+            flatFileParseException.getMessage());
     }
-
-    private Object getErrorTarget(FlatFileParseException flatFileParseException) {
-        BindingResult bindingResult = getBindingResult(flatFileParseException);
-        return bindingResult.getTarget();
-    }
-
-    private List<FieldError> getFieldErrors(FlatFileParseException flatFileParseException) {
-        BindingResult bindingResult = getBindingResult(flatFileParseException);
-        return bindingResult.getFieldErrors();
-    }
-
 }

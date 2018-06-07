@@ -6,6 +6,12 @@ import org.springframework.batch.core.listener.ItemListenerSupport;
 
 import java.util.List;
 
+/**
+ * This class is not invoked
+ *
+ * @param <I>
+ * @param <O>
+ */
 public class ItemFailureLoggerListener<I, O> extends ItemListenerSupport<I, O> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemFailureLoggerListener.class);

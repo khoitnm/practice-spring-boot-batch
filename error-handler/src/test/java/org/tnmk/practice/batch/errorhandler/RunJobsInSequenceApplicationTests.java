@@ -17,6 +17,7 @@ public class RunJobsInSequenceApplicationTests {
     @Test
     public void startFileProcessingBatchJob() {
         fileProcessingJobLauncherHelper.startFileProcessJob("/not_exist_file.csv", 3, 3);
+        fileProcessingJobLauncherHelper.startFileProcessJob("/heroes_error_at_3.csv", 2, 3);
         fileProcessingJobLauncherHelper.startFileProcessJob("/heroes_error_at_3_4.csv", 2, 3);
     }
 

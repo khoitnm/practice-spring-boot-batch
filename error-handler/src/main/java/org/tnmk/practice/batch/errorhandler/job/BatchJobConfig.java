@@ -16,6 +16,7 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.tnmk.common.batch.step.FileItemReaderFactory;
 import org.tnmk.common.batch.step.SaveItemsToStepContextWriter;
 import org.tnmk.practice.batch.errorhandler.consts.JobParams;
+import org.tnmk.practice.batch.errorhandler.exception.BatchAbortException;
 import org.tnmk.practice.batch.errorhandler.exceptionlistener.ItemFailureChunkLoggerListener;
 import org.tnmk.practice.batch.errorhandler.exceptionlistener.ItemFailureLoggerListener;
 import org.tnmk.practice.batch.errorhandler.job.step.FanInTasklet;
@@ -61,13 +62,18 @@ public class BatchJobConfig {
             .reader(fileReader(null))
             .processor(itemProcessor())
             .writer(itemWriter())
+
+            .faultTolerant().noSkip(BatchAbortException.class)
+
             .listener(new ItemFailureChunkLoggerListener())
+
 
             //Each chunk will run on a separated thread
             //There's only maximum 10 concurrent chunks are handled at the same time.
             .taskExecutor(new SimpleAsyncTaskExecutor())
             .throttleLimit(threadsCount)
 
+            //This listener is not invoked???!!!
             .listener(new ItemFailureLoggerListener<>())
             .build();
     }

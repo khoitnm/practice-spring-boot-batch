@@ -1,0 +1,47 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = "${gradleVersion}"
+}
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot' //To build this project as a runnable Spring Boot application.
+apply plugin: 'io.spring.dependency-management' //Manage version of different Spring Projects.
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+
+dependencies {
+    compile project(':common-batch')
+    compile('org.springframework.boot:spring-boot-starter-batch')
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtime('org.hsqldb:hsqldb')
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+buildscript {
+    apply from: "version.gradle"
+
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        //Needed by the plugin 'org.springframework.boot'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+
+        //Needed by the plugin 'io.spring.dependency-management'
+        classpath("io.spring.gradle:dependency-management-plugin:${springGradleDependencyManagementVersion}")
+    }
+}
+
+dependencyManagement {
+    imports {
+        //Needed by the plugin 'io.spring.dependency-management'
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+    }
+}

@@ -71,6 +71,7 @@ sh gradlew clean build -x test
 14. Spring Batch Admin
     https://docs.spring.io/spring-batch-admin/trunk/
     https://docs.spring.io/spring-batch-admin/trunk/reference/reference.xhtml         
-        
+15. Common Batch Patterns
+    https://docs.spring.io/spring-batch/4.0.x/reference/html/common-patterns.html        
 
 

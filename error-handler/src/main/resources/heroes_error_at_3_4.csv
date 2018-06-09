@@ -4,3 +4,8 @@ id,username,password,age
 3,HERO3,secret3,wrongage3
 wrongid4,HERO4,secret4,4
 5,HERO5,secret5,5
+6,HERO6,password6,6
+7,HERO7,password7,7
+8,HERO8,password8,8
+9,HERO9,password9,9
+10,HERO10,password10,10

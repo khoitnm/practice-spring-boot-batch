@@ -16,7 +16,6 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.tnmk.common.batch.step.FileItemReaderFactory;
 import org.tnmk.common.batch.step.SaveItemsToStepContextWriter;
 import org.tnmk.practice.batch.errorhandler.consts.JobParams;
-import org.tnmk.practice.batch.errorhandler.exception.BatchAbortException;
 import org.tnmk.practice.batch.errorhandler.exceptionlistener.ItemFailureChunkLoggerListener;
 import org.tnmk.practice.batch.errorhandler.exceptionlistener.ItemFailureLoggerListener;
 import org.tnmk.practice.batch.errorhandler.job.step.FanInTasklet;
@@ -59,11 +58,13 @@ public class BatchJobConfig {
         return stepBuilderFactory.get("fan-out processing step")
             .listener(executionListenerSupport())
             .<User, User>chunk(chunkSize)
+
+//            .faultTolerant().skip(SkippableRowException.class).noSkip(BatchAbortException.class)
+
             .reader(fileReader(null))
             .processor(itemProcessor())
             .writer(itemWriter())
 
-            .faultTolerant().noSkip(BatchAbortException.class)
 
             .listener(new ItemFailureChunkLoggerListener())
 

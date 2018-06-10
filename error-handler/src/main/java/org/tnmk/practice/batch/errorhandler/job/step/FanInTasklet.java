@@ -26,10 +26,14 @@ public class FanInTasklet<T> implements Tasklet {
         Map<String, Object> jobContext = chunkContext.getStepContext().getJobExecutionContext();
         T stepContextParamValue = (T) jobContext.get(stepContextParamName);
 
-        log.info("Thread[{}]: \nFAN-IN-TASKLET:" +
-            "\n\tJobInstance: {}, " +
-            "\n\tStep contribution: {}, " +
-            "\n\tChunkContext: {}", Thread.currentThread().getName(), jobInstance, contribution, chunkContext);
+        log.info("" +
+            "\nFAN-IN-TASKLET:" +
+            "\n\tThread: " + Thread.currentThread().getName() +
+            "\n\tJobInstance: " + jobInstance +
+            "\n\tStep contribution: " + contribution +
+            "\n\tContextParamValue from Previous Step: " + stepContextParamValue +
+            "\n\tChunkContext: " + chunkContext
+        );
         Thread.sleep(1000);
         return null;
     }

@@ -73,7 +73,7 @@ public class ItemFailureChunkLoggerListener implements ChunkListener {
         User errorUser = (User) errorTarget;
         if (errorUser.getId() == null) {
             LOGGER.error("FLAT FILE PARSE EXCEPTION: Cannot get id from the row, should stop the batch.", flatFileParseException);
-            //throw new BatchAbortException("BATCH ERROR: Cannot get id from the row. Input data is wrong. Abort the whole batch.", flatFileParseException);
+//            throw new BatchAbortException("BATCH ERROR: Cannot get id from the row. Input data is wrong. Abort the whole batch.", flatFileParseException);
         } else {
             LOGGER.warn("FLAT FILE PARSE EXCEPTION: Can get id from the row, but some other fields in the row are corrupted, should skip it and collect error later.", flatFileParseException);
             //throw new SkipableRowException("SKIPABLE ROW: The row is error, skip it.", flatFileParseException);

@@ -8,6 +8,7 @@ import org.springframework.batch.core.listener.ExecutionContextPromotionListener
 import org.springframework.batch.core.listener.StepExecutionListenerSupport;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,8 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.tnmk.common.batch.step.FileItemReaderFactory;
 import org.tnmk.common.batch.step.SaveItemsToStepContextWriter;
 import org.tnmk.practice.batch.errorhandler.consts.JobParams;
+import org.tnmk.practice.batch.errorhandler.exception.BatchAbortException;
+import org.tnmk.practice.batch.errorhandler.exception.RowExceptionHandler;
 import org.tnmk.practice.batch.errorhandler.exceptionlistener.ItemFailureChunkLoggerListener;
 import org.tnmk.practice.batch.errorhandler.exceptionlistener.ItemFailureLoggerListener;
 import org.tnmk.practice.batch.errorhandler.job.step.FanInTasklet;
@@ -59,13 +62,12 @@ public class BatchJobConfig {
             .listener(executionListenerSupport())
             .<User, User>chunk(chunkSize)
 
-//            .faultTolerant().skip(SkippableRowException.class).noSkip(BatchAbortException.class)
-
+            .faultTolerant().skip(FlatFileParseException.class).noSkip(BatchAbortException.class)
             .reader(fileReader(null))
             .processor(itemProcessor())
             .writer(itemWriter())
 
-
+            .exceptionHandler(new RowExceptionHandler())
             .listener(new ItemFailureChunkLoggerListener())
 
 
@@ -98,7 +100,7 @@ public class BatchJobConfig {
 
     //I can use JobScope, StepScope, or even SingletonScope here, the program runs just fine?!
     @Bean
-//    @JobScope
+    @JobScope
     public FanInTasklet<List<User>> fanInTasklet() {
         return new FanInTasklet<>(StepContextItems.STEP_KEY_ITEMS);
     }

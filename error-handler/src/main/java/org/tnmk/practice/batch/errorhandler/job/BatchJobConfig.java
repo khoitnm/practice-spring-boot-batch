@@ -59,13 +59,13 @@ public class BatchJobConfig {
         @Value("#{jobParameters[" + JobParams.PARAM_CHUNK_SIZE + "]}") final Integer chunkSize,
         @Value("#{jobParameters[" + JobParams.PARAM_THREADS_COUNT + "]}") final Integer threadsCount) {
         return stepBuilderFactory.get("fan-out processing step")
-            .listener(executionListenerSupport())
+            .listener(saveContextValueExecutionListenerSupport())
             .<User, User>chunk(chunkSize)
 
             .faultTolerant().skip(FlatFileParseException.class).noSkip(BatchAbortException.class)
             .reader(fileReader(null))
             .processor(itemProcessor())
-            .writer(itemWriter())
+            .writer(saveItemToStepContextItemWriter())
 
             .exceptionHandler(new RowExceptionHandler())
             .listener(new ItemFailureChunkLoggerListener())
@@ -83,7 +83,7 @@ public class BatchJobConfig {
 
     @StepScope
     @Bean
-    public StepExecutionListenerSupport executionListenerSupport() {
+    public StepExecutionListenerSupport saveContextValueExecutionListenerSupport() {
         ExecutionContextPromotionListener listener = new ExecutionContextPromotionListener();
         listener.setKeys(new String[]{StepContextItems.STEP_KEY_ITEMS});
         return listener;
@@ -135,7 +135,7 @@ public class BatchJobConfig {
      */
     @Bean
     @StepScope
-    public SaveItemsToStepContextWriter<User> itemWriter() {
+    public SaveItemsToStepContextWriter<User> saveItemToStepContextItemWriter() {
         return new SaveItemsToStepContextWriter<>(StepContextItems.STEP_KEY_ITEMS);
     }
 }

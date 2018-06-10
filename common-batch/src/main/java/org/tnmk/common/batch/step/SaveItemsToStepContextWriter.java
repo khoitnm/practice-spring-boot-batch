@@ -1,16 +1,19 @@
 package org.tnmk.common.batch.step;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SaveItemsToStepContextWriter<ITEM> implements ItemWriter<ITEM> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SaveItemsToStepContextWriter.class);
     private final String itemsKeyInStep;
 
     private StepExecution stepExecution;
@@ -21,6 +24,7 @@ public class SaveItemsToStepContextWriter<ITEM> implements ItemWriter<ITEM> {
 
     @BeforeStep
     public void beforeStep(StepExecution stepExecution) {
+        LOGGER.info("\nSAVE-ITEMS-TO-STEP-CONTEXT: BEFORE-STEP: \n\tStepExecution: " + stepExecution);
         this.stepExecution = stepExecution;
         ExecutionContext stepContext = this.stepExecution.getExecutionContext();
         List<ITEM> list = (List<ITEM>) stepContext.get(itemsKeyInStep);
@@ -34,6 +38,7 @@ public class SaveItemsToStepContextWriter<ITEM> implements ItemWriter<ITEM> {
 
     @Override
     public void write(List<? extends ITEM> items) {
+        LOGGER.info("\nSAVE-ITEMS-TO-STEP-CONTEXT: WRITING LIST: \n\titems: " + items);
         ExecutionContext stepContext = this.stepExecution.getExecutionContext();
         List<ITEM> list = (List<ITEM>) stepContext.get(itemsKeyInStep);
         list.addAll(items);
